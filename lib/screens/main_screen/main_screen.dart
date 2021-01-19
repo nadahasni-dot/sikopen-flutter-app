@@ -47,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
                   : false,
               enabled: _isDeviceActivated ? true : false,
               title: Text(DrawerConfiguration.MENU_HOME),
-              leading: Icon(Icons.home),
+              leading: Icon(Icons.map),
               onTap: () {
                 _updateMenuState(DrawerConfiguration.MENU_HOME);
               },
@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
                   : false,
               enabled: _isDeviceActivated ? true : false,
               title: Text(DrawerConfiguration.MENU_CHECKCLOCK_DINAS_LUAR),
-              leading: Icon(Icons.menu_book),
+              leading: Icon(Icons.fact_check),
               onTap: () {
                 _updateMenuState(DrawerConfiguration.MENU_CHECKCLOCK_DINAS_LUAR);
               },
@@ -69,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
                   : false,
               enabled: _isDeviceActivated ? true : false,
               title: Text(DrawerConfiguration.MENU_PEMGAJUAN_IJIN),
-              leading: Icon(Icons.menu_book),
+              leading: Icon(Icons.assignment),
               onTap: () {
                 _updateMenuState(DrawerConfiguration.MENU_PEMGAJUAN_IJIN);
               },
@@ -80,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
                   : false,
               enabled: _isDeviceActivated ? true : false,
               title: Text(DrawerConfiguration.MENU_LAPORAN_ABSENSI),
-              leading: Icon(Icons.menu_book),
+              leading: Icon(Icons.book),
               onTap: () {
                 _updateMenuState(DrawerConfiguration.MENU_LAPORAN_ABSENSI);
               },
