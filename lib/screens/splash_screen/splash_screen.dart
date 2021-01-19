@@ -25,7 +25,7 @@ class SplashScreen extends StatelessWidget {
                 decoration: BoxDecoration(color: Colors.blue),
                 child: Center(
                   child: Text(
-                    'My App',
+                    'SABINSOLUSI',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,

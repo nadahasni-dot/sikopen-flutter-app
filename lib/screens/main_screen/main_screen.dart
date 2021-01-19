@@ -96,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
                   _updateMenuState(DrawerConfiguration.MENU_REGISTRASI_DEVICE);
                 }),
             Divider(
-              thickness: 1.0,
+              thickness: 0.5,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
