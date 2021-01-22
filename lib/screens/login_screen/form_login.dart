@@ -31,8 +31,7 @@ class LoginFormState extends State<LoginForm> {
           TextFormField(
             textAlignVertical: TextAlignVertical.bottom,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            decoration:
-                InputDecoration(hintText: 'Username'),
+            decoration: InputDecoration(hintText: 'Username'),
             keyboardType: TextInputType.text,
             validator: (value) {
               if (value.isEmpty) {
