@@ -1,4 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_world_app/globals/ApiEndpoints.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:hello_world_app/helper/Md5Converter.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   ChangePasswordScreen({Key key}) : super(key: key);
@@ -13,10 +17,93 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _passwordVisibility1 = true;
   bool _passwordVisibility2 = true;
   bool _passwordVisibility3 = true;
+  bool _isProcessingRequest = false;
 
   var _controller1 = TextEditingController();
   var _controller2 = TextEditingController();
   var _controller3 = TextEditingController();
+
+  void _postChangePassword(BuildContext context, int userId, String oldPassword,
+      String newPassword) async {
+    Dio _dio = new Dio();
+    Response response;
+    _dio.options.connectTimeout = 8000;
+    _dio.options.receiveTimeout = 3000;
+
+    setState(() {
+      _isProcessingRequest = true;
+    });
+
+    try {
+      response = await _dio.post(ApiEndpoints.POST_CHANGE_PASSWORD, data: {
+        'employee_id': userId,
+        'password_old': oldPassword,
+        'password_new': newPassword
+      });
+
+      setState(() {
+        _isProcessingRequest = false;
+      });
+
+      if (response.statusCode == 200) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("Berhasil merubah password"),
+        ));
+      }
+    } on DioError catch (e) {
+      setState(() {
+        _isProcessingRequest = false;
+      });
+
+      // if error on sending request
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Connection time out. Harap periksa koneksi anda"),
+          ));
+          print('connection time out');
+          return;
+          break;
+        case DioErrorType.DEFAULT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Terjadi error. Harap coba beberapa saat lagi"),
+          ));
+          print('default error');
+          return;
+          break;
+        case DioErrorType.CANCEL:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Request canceled"),
+          ));
+          print('canceled');
+          return;
+          break;
+        default:
+          print('another error occured');
+      }
+
+      // if error on status code
+      switch (e.response.statusCode) {
+        case 401:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Password lama anda tidak sesuai"),
+          ));
+          return;
+          break;
+        case 500:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Server Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+          break;
+        default:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Terjadi Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+      }
+    }
+  }
 
   void _togglePasswordVisibility(int inputPassword) {
     setState(() {
@@ -38,126 +125,148 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: _controller1,
-                  textAlignVertical: TextAlignVertical.bottom,
-                  decoration: InputDecoration(
-                      hintText: 'Password Lama',
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          _togglePasswordVisibility(1);
+    return ModalProgressHUD(
+      inAsyncCall: _isProcessingRequest,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _controller1,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        decoration: InputDecoration(
+                            hintText: 'Password Lama',
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                _togglePasswordVisibility(1);
+                              },
+                              child: Icon(
+                                _passwordVisibility1
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: _passwordVisibility1
+                                    ? Colors.grey
+                                    : Colors.blue,
+                              ),
+                            )),
+                        obscureText: _passwordVisibility1,
+                        keyboardType: TextInputType.text,
+                        enableSuggestions: false,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Harap masukkan password lama';
+                          }
+                          return null;
                         },
-                        child: Icon(
-                          _passwordVisibility1
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color:
-                              _passwordVisibility1 ? Colors.grey : Colors.blue,
-                        ),
-                      )),
-                  obscureText: _passwordVisibility1,
-                  keyboardType: TextInputType.text,
-                  enableSuggestions: false,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Harap masukkan password lama';
-                    }
-                    return null;
-                  },
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                ),
-                SizedBox(height: 10.0),
-                TextFormField(
-                  controller: _controller2,
-                  textAlignVertical: TextAlignVertical.bottom,
-                  decoration: InputDecoration(
-                      hintText: 'Password Baru',
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          _togglePasswordVisibility(2);
+                        onEditingComplete: () =>
+                            FocusScope.of(context).nextFocus(),
+                      ),
+                      SizedBox(height: 10.0),
+                      TextFormField(
+                        controller: _controller2,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        decoration: InputDecoration(
+                            hintText: 'Password Baru',
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                _togglePasswordVisibility(2);
+                              },
+                              child: Icon(
+                                _passwordVisibility2
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: _passwordVisibility2
+                                    ? Colors.grey
+                                    : Colors.blue,
+                              ),
+                            )),
+                        obscureText: _passwordVisibility2,
+                        keyboardType: TextInputType.text,
+                        enableSuggestions: false,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Harap masukkan password baru';
+                          }
+                          return null;
                         },
-                        child: Icon(
-                          _passwordVisibility2
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color:
-                              _passwordVisibility2 ? Colors.grey : Colors.blue,
-                        ),
-                      )),
-                  obscureText: _passwordVisibility2,
-                  keyboardType: TextInputType.text,
-                  enableSuggestions: false,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Harap masukkan password baru';
-                    }
-                    return null;
-                  },
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                ),
-                SizedBox(height: 10.0),
-                TextFormField(
-                  controller: _controller3,
-                  textAlignVertical: TextAlignVertical.bottom,
-                  decoration: InputDecoration(
-                      hintText: 'Ulangi Password',
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          _togglePasswordVisibility(3);
+                        onEditingComplete: () =>
+                            FocusScope.of(context).nextFocus(),
+                      ),
+                      SizedBox(height: 10.0),
+                      TextFormField(
+                        controller: _controller3,
+                        textAlignVertical: TextAlignVertical.bottom,
+                        decoration: InputDecoration(
+                            hintText: 'Ulangi Password',
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                _togglePasswordVisibility(3);
+                              },
+                              child: Icon(
+                                _passwordVisibility3
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: _passwordVisibility3
+                                    ? Colors.grey
+                                    : Colors.blue,
+                              ),
+                            )),
+                        obscureText: _passwordVisibility3,
+                        keyboardType: TextInputType.text,
+                        enableSuggestions: false,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Harap masukkan pengulangan password';
+                          }
+
+                          if (_controller2.text != _controller3.text) {
+                            return 'Pengulangan password tidak sama';
+                          }
+
+                          return null;
                         },
-                        child: Icon(
-                          _passwordVisibility3
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color:
-                              _passwordVisibility3 ? Colors.grey : Colors.blue,
-                        ),
-                      )),
-                  obscureText: _passwordVisibility3,
-                  keyboardType: TextInputType.text,
-                  enableSuggestions: false,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Harap masukkan pengulangan password';
-                    }
+                        onEditingComplete: () =>
+                            FocusScope.of(context).nextFocus(),
+                      ),
+                      SizedBox(height: 10.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Validate returns true if the form is valid, or false
+                          // otherwise.
+                          if (_formKey.currentState.validate()) {
+                            setState(() {
+                              _passwordVisibility1 = true;
+                              _passwordVisibility2 = true;
+                              _passwordVisibility3 = true;
+                            });
 
-                    if (_controller2.text != _controller3.text) {
-                      return 'Pengulangan password tidak sama';
-                    }
+                            print(Md5Converter.generateMd5(_controller1.text));
 
-                    return null;
-                  },
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                ),
-                SizedBox(height: 10.0),
-                ElevatedButton(
-                  onPressed: () {
-                    // Validate returns true if the form is valid, or false
-                    // otherwise.
-                    if (_formKey.currentState.validate()) {
-                      _controller1.clear();
-                      _controller2.clear();
-                      _controller3.clear();
+                            _postChangePassword(
+                                context,
+                                7,
+                                Md5Converter.generateMd5(_controller1.text),
+                                Md5Converter.generateMd5(_controller2.text));
 
-                      setState(() {
-                        _passwordVisibility1 = true;
-                        _passwordVisibility2 = true;
-                        _passwordVisibility3 = true;
-                      });
-                    }
-                  },
-                  child: Text('Login'),
-                ),
-              ],
-            )),
+                            _controller1.clear();
+                            _controller2.clear();
+                            _controller3.clear();
+                          }
+                        },
+                        child: Text('Login'),
+                      ),
+                    ],
+                  )),
+            ),
+          ],
+        ),
       ),
     );
   }
