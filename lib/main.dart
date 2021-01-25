@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world_app/screens/login_screen/login_screen.dart';
 import 'package:hello_world_app/screens/splash_screen/splash_screen.dart';
+import 'package:hello_world_app/utils/LoginPreferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './screens/main_screen/main_screen.dart';
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //create instance of loginprefs
+  LoginPreferences.prefs = await SharedPreferences.getInstance();
+  print(LoginPreferences.prefs.getBool(LoginPreferences.LOGGED_IN));
+
   runApp(MyApp());
 }
 

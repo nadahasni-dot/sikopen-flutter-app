@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hello_world_app/screens/login_screen/login_screen.dart';
+import 'package:hello_world_app/screens/main_screen/main_screen.dart';
+import 'package:hello_world_app/utils/LoginPreferences.dart';
 
 class SplashScreen extends StatelessWidget {
   static const routeName = '/';
@@ -44,8 +46,10 @@ class SplashScreen extends StatelessWidget {
   void _goToLogin(BuildContext context, int seconds) {
     Timer(Duration(seconds: seconds), () {
       Navigator.of(context).pop();
-      Navigator.pushNamed(context, LoginScreen.routeName,
-          arguments: {'passedString': 'samlekom'});
+      LoginPreferences.prefs.getBool(LoginPreferences.LOGGED_IN) == true
+          ? Navigator.pushNamed(context, MainScreen.routeName)
+          : Navigator.pushNamed(context, LoginScreen.routeName,
+              arguments: {'passedString': 'samlekom'});
     });
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world_app/screens/main_screen/main_screen.dart';
+import 'package:hello_world_app/utils/LoginPreferences.dart';
 
 // Create a Form widget.
 class LoginForm extends StatefulWidget {
@@ -17,8 +18,15 @@ class LoginFormState extends State<LoginForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<MyCustomFormState>.
-  final _formKey = GlobalKey<FormState>();
-  bool _passwordVisibility = true;
+  var _formKey;
+  bool _passwordVisibility;
+
+  @override
+  void initState() {    
+    super.initState();
+    _formKey = GlobalKey<FormState>();
+    _passwordVisibility = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +83,7 @@ class LoginFormState extends State<LoginForm> {
                 // Validate returns true if the form is valid, or false
                 // otherwise.
                 if (_formKey.currentState.validate()) {
+                  LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, true);
                   // If the form is valid, display a Snackbar.
                   // Scaffold.of(context)
                   //     .showSnackBar(SnackBar(content: Text('Processing Data')));

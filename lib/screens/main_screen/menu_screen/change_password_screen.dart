@@ -14,14 +14,27 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  bool _passwordVisibility1 = true;
-  bool _passwordVisibility2 = true;
-  bool _passwordVisibility3 = true;
-  bool _isProcessingRequest = false;
+  bool _passwordVisibility1;
+  bool _passwordVisibility2;
+  bool _passwordVisibility3;
+  bool _isProcessingRequest;
 
-  var _controller1 = TextEditingController();
-  var _controller2 = TextEditingController();
-  var _controller3 = TextEditingController();
+  var _controller1;
+  var _controller2;
+  var _controller3;
+
+  @override
+  void initState() {    
+    super.initState();
+    _passwordVisibility1 = true;
+    _passwordVisibility2 = true;
+    _passwordVisibility3 = true;
+    _isProcessingRequest = false;
+
+    _controller1 = TextEditingController();
+    _controller2 = TextEditingController();
+    _controller3 = TextEditingController();
+  }
 
   void _postChangePassword(BuildContext context, int userId, String oldPassword,
       String newPassword) async {

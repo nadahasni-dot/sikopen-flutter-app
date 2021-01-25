@@ -7,6 +7,7 @@ import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dina
 import 'package:hello_world_app/screens/main_screen/menu_screen/laporan_absensi_bulanan_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/pengajuan_ijin_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/registrasi_device_screen.dart';
+import 'package:hello_world_app/utils/LoginPreferences.dart';
 
 class MainScreen extends StatefulWidget {
   static const routeName = '/main';
@@ -156,6 +157,7 @@ class _MainScreenState extends State<MainScreen> {
     Widget continueButton = FlatButton(
       child: Text("Logout"),
       onPressed: () {
+        LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, false);
         print('logged out');
         // close alert
         Navigator.of(context).pop();
