@@ -35,8 +35,8 @@ class _MainScreenState extends State<MainScreen> {
           children: <Widget>[
             UserAccountsDrawerHeader(
               margin: EdgeInsets.only(bottom: 8.0),
-              accountName: Text('account name'),
-              accountEmail: Text('account@email.com'),
+              accountName: Text(LoginPreferences.prefs.getString(LoginPreferences.PERSON_NAME)),
+              accountEmail: Text('Employee ID: ' + LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_ID).toString()),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: NetworkImage(
                     'https://bonds-and-shares.com/wp-content/uploads/2019/07/placeholder-user.png'),
@@ -156,8 +156,10 @@ class _MainScreenState extends State<MainScreen> {
     );
     Widget continueButton = FlatButton(
       child: Text("Logout"),
-      onPressed: () {
+      onPressed: () async {
         LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, false);
+        await LoginPreferences.prefs.clear();
+
         print('logged out');
         // close alert
         Navigator.of(context).pop();

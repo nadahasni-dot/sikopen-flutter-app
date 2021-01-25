@@ -258,9 +258,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               _passwordVisibility1 = true;
                               _passwordVisibility2 = true;
                               _passwordVisibility3 = true;
-                            });
-
-                            print(Md5Converter.generateMd5(_controller1.text));
+                            });                            
 
                             _postChangePassword(
                                 context,
@@ -286,9 +284,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   void dispose() {
+    super.dispose();
     _controller1.dispose();
     _controller2.dispose();
     _controller3.dispose();
-    super.dispose();
   }
 }

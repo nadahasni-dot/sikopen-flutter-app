@@ -10,7 +10,6 @@ Future main() async {
 
   //create instance of loginprefs
   LoginPreferences.prefs = await SharedPreferences.getInstance();
-  print(LoginPreferences.prefs.getBool(LoginPreferences.LOGGED_IN));
 
   runApp(MyApp());
 }
