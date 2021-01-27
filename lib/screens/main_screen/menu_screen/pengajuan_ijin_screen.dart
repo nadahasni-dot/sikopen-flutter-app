@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/data_ketidakhadiran_screen.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -90,7 +91,11 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
       });
 
       if (response.statusCode == 200) {
-        print("berhasil " + response.toString());
+        print("berhasil insert !");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Dataketidakhadiran()),
+        );
       }
     } on DioError catch (e) {
       setState(() {
@@ -251,14 +256,21 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
                                         if (_currentIjin == "Ijin") {
                                           fk = "I";
                                         }
-                                        _postKetidakhadiran(
-                                            context,
-                                            LoginPreferences.prefs.getInt(
-                                                LoginPreferences.EMPLOYEE_ID),
-                                            tanggalAwalController.text,
-                                            tanggalAkhirController.text,
-                                            fk,
-                                            keteranganController.text);
+                                        // _postKetidakhadiran(
+                                        //     context,
+                                        //     LoginPreferences.prefs.getInt(
+                                        //         LoginPreferences.EMPLOYEE_ID),
+                                        //     tanggalAwalController.text,
+                                        //     tanggalAkhirController.text,
+                                        //     fk,
+                                        //     keteranganController.text);
+
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Dataketidakhadiran()),
+                                        );
                                       }
                                     },
                                     child: Center(

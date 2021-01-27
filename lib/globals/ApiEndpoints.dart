@@ -3,4 +3,8 @@ class ApiEndpoints {
   static const String POST_CHANGE_PASSWORD = BASE_URL + 'changepassword';
   static const String POST_LOGIN = BASE_URL + 'auth';
   static const String POST_KETIDAKHADIRAN = BASE_URL + 'tdkhadir';
+  static const String GET_DATA_KETIDAKHADIRAN =
+      BASE_URL + 'tdkhadir/get?pegawai_id=';
+  static const String DELETE_KETIDAKHADIRAN = BASE_URL + 'tdkhadir/delete/';
+  static const String POST_KIRIM_KETIDAKHADIRAN = BASE_URL + 'tdkhadir/kirim/';
 }
