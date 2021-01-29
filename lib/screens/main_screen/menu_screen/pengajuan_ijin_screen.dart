@@ -62,6 +62,13 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
     });
   }
 
+  void changeScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Dataketidakhadiran()),
+    );
+  }
+
   void _postKetidakhadiran(BuildContext context, int pegawaiId, String mulai,
       String akhir, String fk_tidak_hadir, String keterangan) async {
     Dio _dio = new Dio();
@@ -92,10 +99,7 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
 
       if (response.statusCode == 200) {
         print("berhasil insert !");
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Dataketidakhadiran()),
-        );
+        changeScreen();
       }
     } on DioError catch (e) {
       setState(() {
@@ -158,8 +162,44 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
       inAsyncCall: _isProcessingRequest,
       child: ListView(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: 50,
+                      child: Container(
+                        child: Material(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.transparent,
+                          child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              splashColor: Colors.amber,
+                              onTap: () {
+                                changeScreen();
+                              },
+                              child: Center(
+                                child: Text(
+                                  "Data Ketidakhadiran",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )),
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(
+                                colors: [Colors.cyan, Colors.cyan[300]],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter)),
+                      )))
+            ],
+          ),
           Card(
-            margin: EdgeInsets.all(15),
+            margin: EdgeInsets.all(10),
             elevation: 5,
             child: Container(
               width: MediaQuery.of(context).size.width,
@@ -192,7 +232,7 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
                           ),
                         ),
                         Container(
-                          width: MediaQuery.of(context).size.width * 0.8,
+                          width: MediaQuery.of(context).size.width * 0.5,
                           child: DropdownButton(
                             value: _currentIjin,
                             items: _dropDownIjinItems,
@@ -256,21 +296,14 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
                                         if (_currentIjin == "Ijin") {
                                           fk = "I";
                                         }
-                                        // _postKetidakhadiran(
-                                        //     context,
-                                        //     LoginPreferences.prefs.getInt(
-                                        //         LoginPreferences.EMPLOYEE_ID),
-                                        //     tanggalAwalController.text,
-                                        //     tanggalAkhirController.text,
-                                        //     fk,
-                                        //     keteranganController.text);
-
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  Dataketidakhadiran()),
-                                        );
+                                        _postKetidakhadiran(
+                                            context,
+                                            LoginPreferences.prefs.getInt(
+                                                LoginPreferences.EMPLOYEE_ID),
+                                            tanggalAwalController.text,
+                                            tanggalAkhirController.text,
+                                            fk,
+                                            keteranganController.text);
                                       }
                                     },
                                     child: Center(
