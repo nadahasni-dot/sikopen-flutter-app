@@ -86,7 +86,8 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
         context: context,
         builder: (context) => AlertDialog(
               title: Text("Success"),
-              content: Text("Berhasil melakukan presensi ($_selectedType) at $_timeString"),
+              content: Text(
+                  "Berhasil melakukan presensi ($_selectedType) at $_timeString"),
               actions: [
                 TextButton(
                   child: Text('Ok'),

@@ -67,16 +67,23 @@ class LoginFormState extends State<LoginForm> {
 
       setState(() {
         _isProcessingRequest = false;
-      });      
+      });
 
       if (response.statusCode == 200) {
-        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_ID, response.data['payload'][0]['employee_id']);
-        LoginPreferences.prefs.setInt(LoginPreferences.USER_ID, response.data['payload'][0]['user_id']);
-        LoginPreferences.prefs.setString(LoginPreferences.USER_NAME, response.data['payload'][0]['user_name']);
-        LoginPreferences.prefs.setBool(LoginPreferences.USER_STATUS, response.data['payload'][0]['user_status']);
-        LoginPreferences.prefs.setString(LoginPreferences.PERSON_NAME, response.data['payload'][0]['person_name']);
-        LoginPreferences.prefs.setInt(LoginPreferences.PAR_ID, response.data['payload'][0]['par_id']);
-        LoginPreferences.prefs.setString(LoginPreferences.USER_SALT_ENCRYPT, response.data['payload'][0]['user_salt_encrypt']);
+        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_ID,
+            response.data['payload'][0]['employee_id']);
+        LoginPreferences.prefs.setInt(
+            LoginPreferences.USER_ID, response.data['payload'][0]['user_id']);
+        LoginPreferences.prefs.setString(LoginPreferences.USER_NAME,
+            response.data['payload'][0]['user_name']);
+        LoginPreferences.prefs.setBool(LoginPreferences.USER_STATUS,
+            response.data['payload'][0]['user_status']);
+        LoginPreferences.prefs.setString(LoginPreferences.PERSON_NAME,
+            response.data['payload'][0]['person_name']);
+        LoginPreferences.prefs.setInt(
+            LoginPreferences.PAR_ID, response.data['payload'][0]['par_id']);
+        LoginPreferences.prefs.setString(LoginPreferences.USER_SALT_ENCRYPT,
+            response.data['payload'][0]['user_salt_encrypt']);
         LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, true);
 
         Navigator.pop(context);
@@ -192,7 +199,7 @@ class LoginFormState extends State<LoginForm> {
             child: ElevatedButton(
               onPressed: () {
                 // if still on process dont do anything
-                if(_isProcessingRequest) {
+                if (_isProcessingRequest) {
                   return;
                 }
 

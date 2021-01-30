@@ -35,17 +35,20 @@ class _MainScreenState extends State<MainScreen> {
           children: <Widget>[
             UserAccountsDrawerHeader(
               margin: EdgeInsets.only(bottom: 8.0),
-              accountName: Text(LoginPreferences.prefs.getString(LoginPreferences.PERSON_NAME)),
-              accountEmail: Text('Employee ID: ' + LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_ID).toString()),
+              accountName: Text(LoginPreferences.prefs
+                  .getString(LoginPreferences.PERSON_NAME)),
+              accountEmail: Text('Employee ID: ' +
+                  LoginPreferences.prefs
+                      .getInt(LoginPreferences.EMPLOYEE_ID)
+                      .toString()),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: NetworkImage(
                     'https://bonds-and-shares.com/wp-content/uploads/2019/07/placeholder-user.png'),
               ),
             ),
             ListTile(
-              selected: _currentMenu == DrawerConfiguration.MENU_HOME
-                  ? true
-                  : false,
+              selected:
+                  _currentMenu == DrawerConfiguration.MENU_HOME ? true : false,
               enabled: _isDeviceActivated ? true : false,
               title: Text(DrawerConfiguration.MENU_HOME),
               leading: Icon(Icons.map),
@@ -54,14 +57,16 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-              selected: _currentMenu == DrawerConfiguration.MENU_CHECKCLOCK_DINAS_LUAR
-                  ? true
-                  : false,
+              selected:
+                  _currentMenu == DrawerConfiguration.MENU_CHECKCLOCK_DINAS_LUAR
+                      ? true
+                      : false,
               enabled: _isDeviceActivated ? true : false,
               title: Text(DrawerConfiguration.MENU_CHECKCLOCK_DINAS_LUAR),
               leading: Icon(Icons.fact_check),
               onTap: () {
-                _updateMenuState(DrawerConfiguration.MENU_CHECKCLOCK_DINAS_LUAR);
+                _updateMenuState(
+                    DrawerConfiguration.MENU_CHECKCLOCK_DINAS_LUAR);
               },
             ),
             ListTile(
@@ -87,9 +92,10 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-                selected: _currentMenu == DrawerConfiguration.MENU_REGISTRASI_DEVICE
-                    ? true
-                    : false,
+                selected:
+                    _currentMenu == DrawerConfiguration.MENU_REGISTRASI_DEVICE
+                        ? true
+                        : false,
                 enabled: _isDeviceActivated ? false : true,
                 title: Text(DrawerConfiguration.MENU_REGISTRASI_DEVICE),
                 leading: Icon(Icons.important_devices),
