@@ -6,7 +6,7 @@ import 'package:hello_world_app/screens/main_screen/menu_screen/change_password_
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dinas_luar_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/laporan_absensi_bulanan_screen.dart';
-import 'package:hello_world_app/screens/main_screen/menu_screen/pengajuan_ijin_screen.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/pengajuan_ijin_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/registrasi_device_screen.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
-import 'package:hello_world_app/screens/main_screen/menu_screen/data_ketidakhadiran_screen.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/data_ketidakhadiran_screen.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 

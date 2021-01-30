@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
-import 'package:hello_world_app/screens/main_screen/menu_screen/edit_ketidakhadiran_screen.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/edit_ketidakhadiran_screen.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
-import 'package:hello_world_app/utils/ketidakhadiran.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/ketidakhadiran.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class Dataketidakhadiran extends StatefulWidget {
