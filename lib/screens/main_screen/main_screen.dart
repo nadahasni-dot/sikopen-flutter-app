@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hello_world_app/screens/login_screen/login_screen.dart';
 import 'package:hello_world_app/screens/main_screen/drawer_configuration.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/change_password_screen.dart';
@@ -22,6 +23,13 @@ class _MainScreenState extends State<MainScreen> {
   String _currentMenu = DrawerConfiguration.MENU_HOME;
   bool _isDeviceActivated = true;
   Widget _menuWidget = CheckClockScreen();
+
+  @override
+  void initState() {
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
