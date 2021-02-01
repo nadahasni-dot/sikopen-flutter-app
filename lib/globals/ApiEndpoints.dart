@@ -12,4 +12,5 @@ class ApiEndpoints {
       BASE_URL + 'tdkhadir/get/';
   static const String POST_UBAH_DATA_KETIDAKHADIRAN_PEGAWAI =
       BASE_URL + 'tdkhadir';
+  static const String GET_MESIN_POINT = BASE_URL + 'points/get';
 }

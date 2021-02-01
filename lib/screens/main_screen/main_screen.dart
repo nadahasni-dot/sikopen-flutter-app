@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hello_world_app/screens/login_screen/login_screen.dart';
 import 'package:hello_world_app/screens/main_screen/drawer_configuration.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/change_password_screen.dart';
-import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_screen.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/check_clock_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dinas_luar_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/laporan_absensi_bulanan_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/pengajuan_ijin_screen.dart';
