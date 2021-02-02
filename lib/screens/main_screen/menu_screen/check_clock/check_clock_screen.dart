@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/mesin.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/shift.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dinas_luar/loading_check_clock.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong/latlong.dart';
@@ -23,14 +25,90 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
   bool _isProcessingRequest = false;
   Timer _timer;
   int _ccType;
+  int mesin_id = -1;
   Position _currentPosition;
   LocationPermission permission;
   bool serviceEnabled;
   final double zoomClose = 17.0;
-  final LatLng _jakarta = LatLng(-6.1275785, 106.8356448);
+  LatLng _defaultLocation = LatLng(-6.1275785, 106.8356448);
   final MapController _mapController = MapController();
   List<Shift> lshift = new List();
+  List<Mesin> ldataMesin = List();
+  bool locationLoaded = false;
   Dio _dio = new Dio();
+  double jarak;
+
+  void _postPresence(BuildContext context, int ccType, int employeeId,
+      String lat, String lng, int mesin_id) async {
+    Response response;
+    _dio.options.connectTimeout = 20000;
+    _dio.options.receiveTimeout = 3000;
+
+    setState(() {
+      _isProcessingRequest = true;
+    });
+
+    try {
+      response = await _dio.post(ApiEndpoints.POST_PRESENCE, data: {
+        'cc_type': ccType,
+        'employee_id': employeeId,
+        'mesin_id': mesin_id,
+        'lat': lat,
+        'lng': lng
+      });
+
+      if (response.statusCode == 200) {
+        _showSuccessAlert(context);
+        _isProcessingRequest = false;
+      }
+    } on DioError catch (e) {
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Connection time out. Harap periksa koneksi anda"),
+          ));
+          print('connection time out');
+          return;
+          break;
+        case DioErrorType.DEFAULT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Tidak ada koneksi. Harap periksa internet anda"),
+          ));
+          print('default error');
+          return;
+          break;
+        case DioErrorType.CANCEL:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Request canceled"),
+          ));
+          print('canceled');
+          return;
+          break;
+        default:
+          print('another error occured');
+      }
+
+      switch (e.response.statusCode) {
+        case 400:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Gagal submit presensi. Harap coba kembali"),
+          ));
+          return;
+          break;
+        case 500:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Server Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+          break;
+        default:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Terjadi Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+      }
+    }
+  }
 
   void setShift() {
     lshift.add(new Shift.setShift(1, "Non Shift Masuk"));
@@ -55,15 +133,15 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
     try {
       response = await _dio.get(ApiEndpoints.GET_MESIN_POINT);
 
-      List<Ketidakhadiran> tList = List();
+      List<Mesin> lmesin = List();
       if (response.statusCode == 200) {
-        for (var i = 0; i < response.data.length - 1; i++) {
-          tList.add(Ketidakhadiran.fromJson(response.data[i.toString()]));
+        for (var i = 0; i < response.data.length; i++) {
+          lmesin.add(Mesin.fromJson(response.data[i]));
         }
-
+        print(lmesin[0].mesin_nama);
         setState(() {
-          dataKetidakhadiran = tList;
-          _dataLoaded = true;
+          ldataMesin = lmesin;
+          // _dataLoaded = true;
         });
         return "Load data sukses";
       }
@@ -71,32 +149,32 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
       // if error on sending request
       switch (e.type) {
         case DioErrorType.CONNECT_TIMEOUT:
-          _responseText = "Connection time out";
+          // _responseText = "Connection time out";
           return "Connection time out pada data ketidakhadiran";
           break;
         case DioErrorType.DEFAULT:
-          _responseText = "Terjadi error. Harap coba beberapa saat lagi";
+          // _responseText = "Terjadi error. Harap coba beberapa saat lagi";
           return "Terjadi error. Harap coba beberapa saat lagi";
           break;
         case DioErrorType.CANCEL:
-          _responseText = "Request canceled";
+          // _responseText = "Request canceled";
           return "Request canceled";
           break;
         default:
-          _responseText = "another error occured";
+          // _responseText = "another error occured";
           return "another error occured";
       }
       switch (e.response.statusCode) {
         case 401:
-          _responseText = "Data tidak ditemukan";
+          // _responseText = "Data tidak ditemukan";
           return "Data tidak ditemukan";
           break;
         case 500:
-          _responseText = "Server Error. Harap coba beberapa saat lagi";
+          // _responseText = "Server Error. Harap coba beberapa saat lagi";
           return "Server Error. Harap coba beberapa saat lagi";
           break;
         default:
-          _responseText = "Terjadi Error. Harap coba beberapa saat lagi";
+          // _responseText = "Terjadi Error. Harap coba beberapa saat lagi";
           return '"Terjadi Error. Harap coba beberapa saat lagi"';
       }
     } catch (e) {
@@ -142,10 +220,12 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
         _positionStreamSubscription = null;
       }).listen((position) {
         if (this.mounted) {
+          // print("_positionStream : " + position.toString());
           setState(() => _currentPosition = position);
           _mapController.move(
               LatLng(_currentPosition.latitude, _currentPosition.longitude),
               zoomClose);
+          _getDistance();
         }
       });
       _positionStreamSubscription.pause();
@@ -179,6 +259,24 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
             ));
   }
 
+  void _showSuccessAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Success"),
+              content: Text(
+                  "Berhasil melakukan presensi ($_selectedType) at $_timeString"),
+              actions: [
+                TextButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ));
+  }
+
   String _formatDateTime(DateTime dateTime) {
     return DateFormat('dd/MM/yyyy hh:mm:ss').format(dateTime);
   }
@@ -193,8 +291,44 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
     }
   }
 
+  void _getDistance() {
+    if (ldataMesin.length != 0 && _currentPosition != null) {
+      for (var i = 0; i < ldataMesin.length; i++) {
+        double tmpJarak = Geolocator.distanceBetween(
+            _currentPosition.latitude,
+            _currentPosition.longitude,
+            double.parse(ldataMesin[i].mesin_latitude),
+            double.parse(ldataMesin[i].mesin_longitude));
+        if (jarak > tmpJarak) {
+          jarak = tmpJarak;
+          mesin_id = ldataMesin[i].mesin_id;
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
+    _getMesin().then((value) {
+      if (locationLoaded) {
+        _getDistance();
+      }
+    });
+
+    Future<Position> _lastPosition = Geolocator.getLastKnownPosition();
+    _lastPosition.then((value) {
+      setState(() {
+        _defaultLocation = LatLng(value.latitude, value.longitude);
+        locationLoaded = true;
+        _currentPosition = value;
+        if (ldataMesin.length != 0) {
+          _getDistance();
+        }
+        print("getLastknownLocation" + value.latitude.toString());
+      });
+    });
+
+    jarak = 999999999999999;
     setShift();
     _determinePosition(context).then((position) {
       print(position.toString());
@@ -202,6 +336,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
         _currentPosition = position;
         _mapController.move(
             new LatLng(position.latitude, position.longitude), zoomClose);
+        locationLoaded = true;
       });
       _toggleListening();
     });
@@ -227,8 +362,12 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
-      inAsyncCall: _isProcessingRequest,
-      child: Column(
+        inAsyncCall: _isProcessingRequest, child: _buildMap());
+  }
+
+  _buildMap() {
+    if (locationLoaded) {
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
@@ -279,9 +418,17 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                     Padding(
                       padding: const EdgeInsets.only(
                           top: 4.0, left: 16.0, right: 16.0, bottom: 4.0),
-                      child: Text(
-                        'Jarak: ',
-                        textAlign: TextAlign.left,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Jarak: ',
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            jarak.ceil().toString() + " m",
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
@@ -326,30 +473,16 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                     mapController: _mapController,
                     options: new MapOptions(
                         center: _currentPosition == null
-                            ? _jakarta
+                            ? _defaultLocation
                             : new LatLng(_currentPosition.latitude,
                                 _currentPosition.longitude),
-                        zoom: zoomClose),
+                        zoom: 17.0),
                     layers: [
                       new TileLayerOptions(
                           urlTemplate:
                               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                           subdomains: ['a', 'b', 'c']),
-                      new MarkerLayerOptions(markers: [
-                        new Marker(
-                            width: 80.0,
-                            height: 80.0,
-                            point: _currentPosition == null
-                                ? _jakarta
-                                : new LatLng(_currentPosition.latitude,
-                                    _currentPosition.longitude),
-                            builder: (context) => new Container(
-                                  child: Icon(
-                                    Icons.person_pin_circle,
-                                    color: Colors.red,
-                                  ),
-                                ))
-                      ]),
+                      new MarkerLayerOptions(markers: _buildPoint()),
                     ]),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -358,7 +491,18 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (jarak < 100) {
+                            _postPresence(
+                                context,
+                                _ccType,
+                                LoginPreferences.prefs
+                                    .getInt(LoginPreferences.EMPLOYEE_ID),
+                                _currentPosition.latitude.toString(),
+                                _currentPosition.longitude.toString(),
+                                mesin_id);
+                          }
+                        },
                         child: Text('Submit Presensi'),
                       ),
                     ),
@@ -368,7 +512,46 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
             ),
           )
         ],
+      );
+    } else {
+      return LoadingCheckClock();
+    }
+  }
+
+  _buildPoint() {
+    List<Marker> marker = List();
+    marker.add(
+      Marker(
+        width: 80.0,
+        height: 80.0,
+        point: _currentPosition == null
+            ? _defaultLocation
+            : new LatLng(_currentPosition.latitude, _currentPosition.longitude),
+        builder: (ctx) => new Container(
+          child: Icon(
+            Icons.person_pin_circle,
+            color: Colors.red,
+          ),
+        ),
       ),
     );
+    if (ldataMesin.length != 0) {
+      for (var i = 0; i < ldataMesin.length; i++) {
+        marker.add(Marker(
+            width: 80.0,
+            height: 80.0,
+            point: new LatLng(double.parse(ldataMesin[i].mesin_latitude),
+                double.parse(ldataMesin[i].mesin_longitude)),
+            builder: (context) => new Container(
+                  child: Icon(
+                    Icons.person_pin_circle,
+                    color: Colors.red,
+                  ),
+                )));
+      }
+      return marker;
+    } else {
+      return marker;
+    }
   }
 }

@@ -11,104 +11,113 @@ class LoadingCheckClock extends StatefulWidget {
 class _LoadingCheckClockState extends State<LoadingCheckClock> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            elevation: 10.0,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 10.0, left: 10.0, right: 10.0, bottom: 4.0),
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[300],
-                    highlightColor: Colors.grey[100],
-                    child: Container(
-                        width: double.infinity,
-                        height: 24.0,
-                        color: Colors.red),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              elevation: 10.0,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10.0, left: 10.0, right: 10.0, bottom: 4.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                          width: double.infinity,
+                          height: 24.0,
+                          color: Colors.red),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Divider(thickness: 0.5, color: Colors.black87),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 4.0, left: 10.0, right: 10.0, bottom: 4.0),
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[300],
-                    highlightColor: Colors.grey[100],
-                    child: Container(
-                        width: double.infinity,
-                        height: 24.0,
-                        color: Colors.red),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Divider(thickness: 0.5, color: Colors.black87),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Divider(thickness: 0.5, color: Colors.black87),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 4.0, left: 10.0, right: 10.0, bottom: 4.0),
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[300],
-                    highlightColor: Colors.grey[100],
-                    child: Container(
-                        width: double.infinity,
-                        height: 24.0,
-                        color: Colors.red),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 4.0, left: 10.0, right: 10.0, bottom: 4.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                          width: double.infinity,
+                          height: 24.0,
+                          color: Colors.red),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Divider(thickness: 0.5, color: Colors.black87),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 4.0, left: 10.0, right: 10.0, bottom: 4.0),
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[300],
-                    highlightColor: Colors.grey[100],
-                    child: Container(
-                        width: double.infinity,
-                        height: 24.0,
-                        color: Colors.red),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Divider(thickness: 0.5, color: Colors.black87),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Divider(thickness: 0.5, color: Colors.black87),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 4.0, left: 10.0, right: 10.0, bottom: 10.0),
-                  child: Shimmer.fromColors(
-                    baseColor: Colors.grey[300],
-                    highlightColor: Colors.grey[100],
-                    child: Container(
-                        width: double.infinity,
-                        height: 40.0,
-                        color: Colors.red),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 4.0, left: 10.0, right: 10.0, bottom: 4.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                          width: double.infinity,
+                          height: 24.0,
+                          color: Colors.red),
+                    ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Divider(thickness: 0.5, color: Colors.black87),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 4.0, left: 10.0, right: 10.0, bottom: 4.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                          width: double.infinity,
+                          height: 24.0,
+                          color: Colors.red),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Divider(thickness: 0.5, color: Colors.black87),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 4.0, left: 10.0, right: 10.0, bottom: 10.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300],
+                      highlightColor: Colors.grey[100],
+                      child: Container(
+                          width: double.infinity,
+                          height: 40.0,
+                          color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        Expanded(
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 500,
             child: Shimmer.fromColors(
-                baseColor: Colors.grey[300],
-                highlightColor: Colors.grey[100],
-                child: Container(color: Colors.yellow))),
-      ],
+              baseColor: Colors.grey[300],
+              highlightColor: Colors.grey[100],
+              child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Colors.red),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
