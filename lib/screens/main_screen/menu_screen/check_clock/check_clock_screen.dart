@@ -11,6 +11,7 @@ import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dina
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong/latlong.dart';
+import 'package:location_permissions/location_permissions.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class CheckClockScreen extends StatefulWidget {
@@ -21,11 +22,13 @@ class CheckClockScreen extends StatefulWidget {
 }
 
 class _CheckClockScreenState extends State<CheckClockScreen> {
+  Stream<bool> locationEventStream;
   String _timeString, _selectedType;
   bool _isProcessingRequest = false;
   Timer _timer;
   int _ccType;
   int mesin_id = -1;
+  bool snackbarshow = true;
   Position _currentPosition;
   LocationPermission permission;
   bool serviceEnabled;
@@ -34,7 +37,9 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
   final MapController _mapController = MapController();
   List<Shift> lshift = new List();
   List<Mesin> ldataMesin = List();
+  bool islocationLoaded = false;
   bool locationLoaded = false;
+  bool determinelocationLoaded = false;
   Dio _dio = new Dio();
   double jarak;
 
@@ -65,22 +70,22 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
       switch (e.type) {
         case DioErrorType.CONNECT_TIMEOUT:
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Connection time out. Harap periksa koneksi anda"),
-          ));
+              content: Text("Connection time out. Harap periksa koneksi anda"),
+              duration: Duration(seconds: 3)));
           print('connection time out');
           return;
           break;
         case DioErrorType.DEFAULT:
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Tidak ada koneksi. Harap periksa internet anda"),
-          ));
+              content: Text("Tidak ada koneksi. Harap periksa internet anda"),
+              duration: Duration(seconds: 3)));
           print('default error');
           return;
           break;
         case DioErrorType.CANCEL:
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Request canceled"),
-          ));
+              content: Text("Request canceled"),
+              duration: Duration(seconds: 3)));
           print('canceled');
           return;
           break;
@@ -91,20 +96,20 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
       switch (e.response.statusCode) {
         case 400:
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Gagal submit presensi. Harap coba kembali"),
-          ));
+              content: Text("Gagal submit presensi. Harap coba kembali"),
+              duration: Duration(seconds: 3)));
           return;
           break;
         case 500:
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Server Error. Harap coba beberapa saat lagi"),
-          ));
+              content: Text("Server Error. Harap coba beberapa saat lagi"),
+              duration: Duration(seconds: 3)));
           return;
           break;
         default:
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Terjadi Error. Harap coba beberapa saat lagi"),
-          ));
+              content: Text("Terjadi Error. Harap coba beberapa saat lagi"),
+              duration: Duration(seconds: 3)));
           return;
       }
     }
@@ -182,16 +187,17 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
     }
   }
 
+  Future<void> checkGPS() async {
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showGpsAlert(context);
+    }
+  }
+
   // listen location changes
   StreamSubscription<Position> _positionStreamSubscription;
 
   Future<Position> _determinePosition(BuildContext context) async {
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      _showGpsAlert(context);
-      return Future.error('Location services are disabled.');
-    }
-
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.deniedForever) {
       return Future.error(
@@ -207,21 +213,29 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
       }
     }
 
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation,
-        forceAndroidLocationManager: true);
+    try {
+      return await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.bestForNavigation,
+          forceAndroidLocationManager: true);
+    } catch (e) {
+      print("Error pada get current position " + e.toString());
+    }
   }
 
   void _toggleListening() {
     if (_positionStreamSubscription == null) {
-      final positionStream = Geolocator.getPositionStream();
+      final positionStream = Geolocator.getPositionStream(
+          forceAndroidLocationManager: true,
+          desiredAccuracy: LocationAccuracy.bestForNavigation,
+          intervalDuration: Duration(seconds: 1));
       _positionStreamSubscription = positionStream.handleError((error) {
         _positionStreamSubscription.cancel();
         _positionStreamSubscription = null;
       }).listen((position) {
         if (this.mounted) {
-          // print("_positionStream : " + position.toString());
+          print("_positionStream : " + position.toString());
           setState(() => _currentPosition = position);
+          islocationLoaded = true;
           _mapController.move(
               LatLng(_currentPosition.latitude, _currentPosition.longitude),
               zoomClose);
@@ -253,6 +267,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                   child: Text('Go to settings'),
                   onPressed: () {
                     Geolocator.openLocationSettings();
+                    Navigator.pop(context);
                   },
                 ),
               ],
@@ -307,43 +322,102 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
     }
   }
 
+  Future<void> loopLocation() async {
+    if (!islocationLoaded) {
+      try {
+        Geolocator.getLastKnownPosition().then((value) {
+          setState(() {
+            _defaultLocation = LatLng(value.latitude, value.longitude);
+            locationLoaded = true;
+            _currentPosition = value;
+            if (value.latitude != null) {
+              islocationLoaded = true;
+              _getDistance();
+            }
+            _mapController.move(
+                LatLng(_currentPosition.latitude, _currentPosition.longitude),
+                zoomClose);
+            if (ldataMesin.length != 0) {
+              _getDistance();
+            }
+            print("getLastknownLocation looplocation" +
+                value.latitude.toString());
+          });
+        }).catchError(
+            (error) => print(error.toString() + " null pada lastKnown"));
+      } catch (e) {
+        print("Error pada get current position " + e.toString());
+      }
+    }
+  }
+
+  Future<void> getLocationPerSecond() async {
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      print("determinelocation false <<<<<<<<<<<<<<<<");
+      determinelocationLoaded = false;
+      if (snackbarshow == true) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Harap hidupkan GPS !"),
+            duration: Duration(seconds: 3)));
+        snackbarshow = false;
+      }
+
+      setState(() {
+        locationLoaded = false;
+      });
+    } else {
+      if (snackbarshow == false) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("GPS hidup kembali"),
+            duration: Duration(seconds: 3)));
+        snackbarshow = true;
+      }
+      setState(() {
+        locationLoaded = true;
+      });
+      if (determinelocationLoaded == false) {
+        print("determinelocation hidup <<<<<<<<<<<<<<<<");
+        determinelocationLoaded = true;
+        _determinePosition(context).then((position) {
+          print(position.toString());
+          setState(() {
+            islocationLoaded = true;
+            locationLoaded = true;
+            _currentPosition = position;
+            if (locationLoaded) {
+              _mapController.move(
+                  new LatLng(position.latitude, position.longitude), zoomClose);
+              _getDistance();
+            }
+          });
+          _toggleListening();
+        }).catchError((error) =>
+            print(error.toString() + "move pada determinepositionthen"));
+      }
+    }
+  }
+
   @override
   void initState() {
+    checkGPS();
+
     _getMesin().then((value) {
       if (locationLoaded) {
         _getDistance();
       }
     });
 
-    Future<Position> _lastPosition = Geolocator.getLastKnownPosition();
-    _lastPosition.then((value) {
-      setState(() {
-        _defaultLocation = LatLng(value.latitude, value.longitude);
-        locationLoaded = true;
-        _currentPosition = value;
-        if (ldataMesin.length != 0) {
-          _getDistance();
-        }
-        print("getLastknownLocation" + value.latitude.toString());
-      });
-    });
-
     jarak = 999999999999999;
+
     setShift();
-    _determinePosition(context).then((position) {
-      print(position.toString());
-      setState(() {
-        _currentPosition = position;
-        _mapController.move(
-            new LatLng(position.latitude, position.longitude), zoomClose);
-        locationLoaded = true;
-      });
-      _toggleListening();
-    });
+
     _timeString = _formatDateTime(DateTime.now());
     super.initState();
     _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
       _getTime();
+      loopLocation();
+      getLocationPerSecond();
     });
   }
 

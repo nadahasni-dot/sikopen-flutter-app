@@ -30,6 +30,8 @@ dependencies:
   shimmer: ^1.1.2
   progress_dialog: ^1.2.0
   intl: ^0.16.1
+  location_permissions: ^3.0.0
+
 
   flutter:
     sdk: flutter
