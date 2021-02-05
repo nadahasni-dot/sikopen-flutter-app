@@ -13,4 +13,8 @@ class ApiEndpoints {
   static const String POST_UBAH_DATA_KETIDAKHADIRAN_PEGAWAI =
       BASE_URL + 'tdkhadir';
   static const String GET_MESIN_POINT = BASE_URL + 'points/get';
+  static const String GET_DATA_ABSENSI_BULANAN =
+      BASE_URL + 'laporanabsensibulanan/get/';
+  static const String GET_DATA_ABSENSI_PERIODIK =
+      BASE_URL + 'laporanabsensiperiodik/get/';
 }

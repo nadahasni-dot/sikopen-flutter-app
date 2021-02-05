@@ -210,7 +210,7 @@ class _DataketidakhadiranState extends State<Dataketidakhadiran> {
       child: Scaffold(
           key: scaffoldState,
           appBar: AppBar(
-            title: Text('Dataketidakhadiran'),
+            title: Text('Data Ketidakhadiran'),
           ),
           body: _buildCard()),
     );

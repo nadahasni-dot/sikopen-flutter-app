@@ -157,6 +157,16 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
   }
 
   @override
+  void dispose() {
+    tanggalAwalController.dispose();
+    tanggalAkhirController.dispose();
+    namaPegawaiController.dispose();
+    keteranganController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: _isProcessingRequest,
