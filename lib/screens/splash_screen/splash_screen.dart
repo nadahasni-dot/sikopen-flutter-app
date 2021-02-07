@@ -58,8 +58,7 @@ class SplashScreen extends StatelessWidget {
 
   void _checkUid() {
     DeviceRegPreferences.prefs.setBool(DeviceRegPreferences.UID_STATUS, false);
-    if (DeviceRegPreferences.getUid() ==
-        null) {
+    if (DeviceRegPreferences.getUid() == null) {
       DeviceRegPreferences.prefs
           .setString(DeviceRegPreferences.UID, Uuid().v1());
     }

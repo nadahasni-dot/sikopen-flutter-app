@@ -418,7 +418,7 @@ class _RegistrasiDeviceScreenState extends State<RegistrasiDeviceScreen> {
                   print('check error retry');
                   _checkUidActivation(context);
                   break;
-                default:                  
+                default:
                   print('another error retry');
               }
             },

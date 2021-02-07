@@ -12,10 +12,14 @@ class DeviceRegPreferences {
   }
 
   static bool getUidStatus() {
-    return prefs.getBool(UID_STATUS) == null ? false : prefs.getBool(UID_STATUS);
+    return prefs.getBool(UID_STATUS) == null
+        ? false
+        : prefs.getBool(UID_STATUS);
   }
 
   static bool getUidRequestStatus() {
-    return prefs.getBool(UID_REQUEST) == null ? false : prefs.getBool(UID_REQUEST);
+    return prefs.getBool(UID_REQUEST) == null
+        ? false
+        : prefs.getBool(UID_REQUEST);
   }
 }
