@@ -79,7 +79,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           break;
         case DioErrorType.DEFAULT:
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Terjadi error. Harap coba beberapa saat lagi"),
+            content: Text("Network error. Harap periksa koneksi anda."),
           ));
           print('default error');
           return;

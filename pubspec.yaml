@@ -29,6 +29,7 @@ dependencies:
   shared_preferences: ^0.5.12+4
   shimmer: ^1.1.2
   progress_dialog: ^1.2.0
+  uuid: 2.2.2
   intl: ^0.16.1
   location_permissions: ^3.0.0
   month_picker_dialog: ^0.3.3

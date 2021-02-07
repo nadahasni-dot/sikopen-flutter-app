@@ -8,6 +8,7 @@ import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dina
 import 'package:hello_world_app/screens/main_screen/menu_screen/laporan_absensi/laporan_absensi_bulanan_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/pengajuan_ijin_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/registrasi_device_screen.dart';
+import 'package:hello_world_app/utils/DeviceRegPreferences.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 
 class MainScreen extends StatefulWidget {
@@ -21,11 +22,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   String _appTitle = 'Home';
   String _currentMenu = DrawerConfiguration.MENU_HOME;
-  bool _isDeviceActivated = true;
-  Widget _menuWidget = CheckClockScreen();
+  bool _isDeviceActivated;
+  Widget _menuWidget;
 
   @override
   void initState() {
+    _checkUidStatus();
+    print('status uid: $_isDeviceActivated');
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
     super.initState();
@@ -203,6 +206,19 @@ class _MainScreenState extends State<MainScreen> {
         return alert;
       },
     );
+  }
+
+  void _checkUidStatus() {
+    _isDeviceActivated = DeviceRegPreferences.getUidStatus();
+    if (_isDeviceActivated == false) {
+      _menuWidget = RegistrasiDeviceScreen();
+      setState(() {
+        _appTitle = DrawerConfiguration.MENU_REGISTRASI_DEVICE;
+        _currentMenu = DrawerConfiguration.MENU_REGISTRASI_DEVICE;
+      });
+      return;
+    }
+    _menuWidget = CheckClockScreen();
   }
 
   Widget _getActiveMenuWidget(String selectedMenu) {

@@ -17,4 +17,7 @@ class ApiEndpoints {
       BASE_URL + 'laporanabsensibulanan/get/';
   static const String GET_DATA_ABSENSI_PERIODIK =
       BASE_URL + 'laporanabsensiperiodik/get/';
+  static const String GET_UID_ACTIVATION_STATUS =
+      BASE_URL + 'registrasi-uid/uid?employee_id=';
+  static const String POST_UID_REGISTRATION = BASE_URL + 'registrasi-uid';
 }

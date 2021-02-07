@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hello_world_app/screens/login_screen/login_screen.dart';
 import 'package:hello_world_app/screens/main_screen/main_screen.dart';
+import 'package:hello_world_app/utils/DeviceRegPreferences.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
+import 'package:uuid/uuid.dart';
 
 class SplashScreen extends StatelessWidget {
   static const routeName = '/';
@@ -12,6 +14,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _goToLogin(context, 3);
+    _checkUid();
 
     return Scaffold(
       body: Center(
@@ -51,5 +54,15 @@ class SplashScreen extends StatelessWidget {
           : Navigator.pushNamed(context, LoginScreen.routeName,
               arguments: {'passedString': 'samlekom'});
     });
+  }
+
+  void _checkUid() {
+    DeviceRegPreferences.prefs.setBool(DeviceRegPreferences.UID_STATUS, false);
+    if (DeviceRegPreferences.getUid() ==
+        null) {
+      DeviceRegPreferences.prefs
+          .setString(DeviceRegPreferences.UID, Uuid().v1());
+    }
+    print(DeviceRegPreferences.getUid());
   }
 }
