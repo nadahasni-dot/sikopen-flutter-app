@@ -62,6 +62,32 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
         forceAndroidLocationManager: true);
   }
 
+  //get last location
+  void _getLastKnownLocation() {
+    try {
+      Geolocator.getLastKnownPosition().then((value) {
+        if (value == null) {
+          // jika lokasi null maka ambil lokasi lagi
+          _getLastKnownLocation();
+          return;
+        }
+
+        setState(() {
+          _currentPosition = value;
+        });
+
+        _mapController.move(
+            LatLng(_currentPosition.latitude, _currentPosition.longitude),
+            zoomClose);
+
+        print("getLastknownLocation: " + value.latitude.toString());
+      }).catchError(
+          (error) => print(error.toString() + " null pada lastKnown"));
+    } catch (e) {
+      print("Error pada get current position " + e.toString());
+    }
+  }
+
   // to show alert gps not active
   void _showGpsAlert(BuildContext context) {
     showDialog(
@@ -126,7 +152,11 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
 
   @override
   void initState() {
+    print('start pos: ' + _currentPosition.toString());
     // run listen location first, and changes
+    _getLastKnownLocation();
+    _toggleListening();
+
     _determinePosition(context).then((position) {
       print(position.toString());
       setState(() {
@@ -136,7 +166,7 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
         print(_currentPosition);
       });
 
-      _toggleListening();
+      // _toggleListening();
     }).catchError((error) => print(error));
 
     _checkClockTypes = [
@@ -251,7 +281,8 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
                         ? _jakarta
                         : new LatLng(_currentPosition.latitude,
                             _currentPosition.longitude),
-                    zoom: 13.0,
+                    zoom: zoomClose,
+                    interactive: false,
                   ),
                   layers: [
                     new TileLayerOptions(
@@ -286,6 +317,15 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
                       padding: const EdgeInsets.all(10.0),
                       child: ElevatedButton(
                         onPressed: () {
+                          // jika lokasi tidak ditemukan
+                          if (_currentPosition == null) {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  "Lokasi tidak akurat. Harap periksa koneksi dan GPS anda"),
+                            ));
+                            return;
+                          }
+
                           _postOutsidePresence(
                               context,
                               _ccType,

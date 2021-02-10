@@ -550,7 +550,8 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                             ? _defaultLocation
                             : new LatLng(_currentPosition.latitude,
                                 _currentPosition.longitude),
-                        zoom: 17.0),
+                        zoom: zoomClose,
+                        interactive: false),
                     layers: [
                       new TileLayerOptions(
                           urlTemplate:

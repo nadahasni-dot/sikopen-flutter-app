@@ -175,7 +175,7 @@ class _MainScreenState extends State<MainScreen> {
       child: Text("Logout"),
       onPressed: () async {
         LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, false);
-        await LoginPreferences.prefs.clear();
+        // await LoginPreferences.prefs.clear();
 
         print('logged out');
         // close alert
@@ -210,6 +210,7 @@ class _MainScreenState extends State<MainScreen> {
 
   void _checkUidStatus() {
     _isDeviceActivated = DeviceRegPreferences.getUidStatus();
+    
     if (_isDeviceActivated == false) {
       _menuWidget = RegistrasiDeviceScreen();
       setState(() {
