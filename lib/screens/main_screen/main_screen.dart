@@ -7,6 +7,7 @@ import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/chec
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dinas_luar_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/laporan_absensi/laporan_absensi_bulanan_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/pengajuan_ijin_screen.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_cuti/pengajuan_cuti_screen.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/registrasi_device_screen.dart';
 import 'package:hello_world_app/utils/DeviceRegPreferences.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
@@ -89,6 +90,17 @@ class _MainScreenState extends State<MainScreen> {
               leading: Icon(Icons.assignment),
               onTap: () {
                 _updateMenuState(DrawerConfiguration.MENU_PEMGAJUAN_IJIN);
+              },
+            ),
+            ListTile(
+              selected: _currentMenu == DrawerConfiguration.MENU_PEMGAJUAN_CUTI
+                  ? true
+                  : false,
+              enabled: _isDeviceActivated ? true : false,
+              title: Text(DrawerConfiguration.MENU_PEMGAJUAN_CUTI),
+              leading: Icon(Icons.assignment_ind),
+              onTap: () {
+                _updateMenuState(DrawerConfiguration.MENU_PEMGAJUAN_CUTI);
               },
             ),
             ListTile(
@@ -209,7 +221,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _checkUidStatus() {
-    _isDeviceActivated = DeviceRegPreferences.getUidStatus();
+    _isDeviceActivated = DeviceRegPreferences.getUidStatus();    
     
     if (_isDeviceActivated == false) {
       _menuWidget = RegistrasiDeviceScreen();
@@ -234,6 +246,9 @@ class _MainScreenState extends State<MainScreen> {
         break;
       case DrawerConfiguration.MENU_PEMGAJUAN_IJIN:
         selectedScreen = PengajuanIjinScreen();
+        break;
+      case DrawerConfiguration.MENU_PEMGAJUAN_CUTI:
+        selectedScreen = PengajuanCutiScreen();
         break;
       case DrawerConfiguration.MENU_REGISTRASI_DEVICE:
         selectedScreen = RegistrasiDeviceScreen();
