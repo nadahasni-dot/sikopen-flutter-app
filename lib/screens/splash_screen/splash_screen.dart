@@ -30,7 +30,7 @@ class SplashScreen extends StatelessWidget {
                 decoration: BoxDecoration(color: Colors.blue),
                 child: Center(
                   child: Text(
-                    'SABINSOLUSI',
+                    'ABSENSI ONLINE',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,
