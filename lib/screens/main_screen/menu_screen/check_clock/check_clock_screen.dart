@@ -292,6 +292,24 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
             ));
   }
 
+  void _showFailedAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Failed"),
+              content:
+                  Text("Gagal melakukan presensi silahkan periksa jarak anda"),
+              actions: [
+                TextButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ));
+  }
+
   String _formatDateTime(DateTime dateTime) {
     return DateFormat('dd/MM/yyyy hh:mm:ss').format(dateTime);
   }
@@ -551,7 +569,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                             : new LatLng(_currentPosition.latitude,
                                 _currentPosition.longitude),
                         zoom: zoomClose,
-                        interactive: true),
+                        interactive: false),
                     layers: [
                       new TileLayerOptions(
                           urlTemplate:
@@ -577,6 +595,8 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                                 _currentPosition.latitude.toString(),
                                 _currentPosition.longitude.toString(),
                                 mesin_id);
+                          } else {
+                            _showFailedAlert(context);
                           }
                         },
                         child: Text('Submit Presensi'),
