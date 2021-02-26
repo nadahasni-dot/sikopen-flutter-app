@@ -1,8 +1,9 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPreferences{
+class LoginPreferences {
   static SharedPreferences prefs;
 
+  static const String EMPLOYEE_NIP = 'EMPLOYE_NIP';
   static const String EMPLOYEE_ID = 'EMPLOYEE_ID';
   static const String USER_ID = 'USER_ID';
   static const String USER_NAME = 'USER_NAME';

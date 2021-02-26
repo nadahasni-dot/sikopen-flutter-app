@@ -49,9 +49,9 @@ class _MainScreenState extends State<MainScreen> {
               margin: EdgeInsets.only(bottom: 8.0),
               accountName: Text(LoginPreferences.prefs
                   .getString(LoginPreferences.PERSON_NAME)),
-              accountEmail: Text('Employee ID: ' +
+              accountEmail: Text('NIP: ' +
                   LoginPreferences.prefs
-                      .getInt(LoginPreferences.EMPLOYEE_ID)
+                      .getString(LoginPreferences.EMPLOYEE_NIP)
                       .toString()),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: NetworkImage(
@@ -221,8 +221,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _checkUidStatus() {
-    _isDeviceActivated = DeviceRegPreferences.getUidStatus();    
-    
+    _isDeviceActivated = DeviceRegPreferences.getUidStatus();
+
     if (_isDeviceActivated == false) {
       _menuWidget = RegistrasiDeviceScreen();
       setState(() {

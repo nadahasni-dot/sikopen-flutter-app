@@ -85,7 +85,9 @@ class LoginFormState extends State<LoginForm> {
         LoginPreferences.prefs.setString(LoginPreferences.USER_SALT_ENCRYPT,
             response.data['payload'][0]['user_salt_encrypt']);
         LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, true);
-
+        LoginPreferences.prefs.setString(LoginPreferences.EMPLOYEE_NIP,
+            response.data['payload'][0]['employee']['employee_nip']);
+        print(response.data['payload'][0]['employee']['employee_nip']);
         Navigator.pop(context);
         Navigator.pushNamed(context, MainScreen.routeName);
       }

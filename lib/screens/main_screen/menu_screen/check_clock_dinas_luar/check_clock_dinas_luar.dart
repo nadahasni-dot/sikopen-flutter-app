@@ -223,7 +223,7 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
                     padding: const EdgeInsets.only(
                         top: 4.0, left: 16.0, right: 16.0, bottom: 4.0),
                     child: Text(
-                      'NIP: ${LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_ID).toString()}',
+                      'NIP: ${LoginPreferences.prefs.getString(LoginPreferences.EMPLOYEE_NIP)}',
                       textAlign: TextAlign.left,
                     ),
                   ),

@@ -469,7 +469,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                       padding: const EdgeInsets.only(
                           top: 4.0, left: 16.0, right: 16.0, bottom: 4.0),
                       child: Text(
-                        'NIP: ${LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_ID).toString()}',
+                        'NIP: ${LoginPreferences.prefs.getString(LoginPreferences.EMPLOYEE_NIP)}',
                         textAlign: TextAlign.left,
                       ),
                     ),
@@ -551,13 +551,14 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                             : new LatLng(_currentPosition.latitude,
                                 _currentPosition.longitude),
                         zoom: zoomClose,
-                        interactive: false),
+                        interactive: true),
                     layers: [
                       new TileLayerOptions(
                           urlTemplate:
                               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                           subdomains: ['a', 'b', 'c']),
                       new MarkerLayerOptions(markers: _buildPoint()),
+                      new CircleLayerOptions(circles: buildRadius()),
                     ]),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -597,8 +598,8 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
     List<Marker> marker = List();
     marker.add(
       Marker(
-        width: 80.0,
-        height: 80.0,
+        width: 130.0,
+        height: 130.0,
         point: _currentPosition == null
             ? _defaultLocation
             : new LatLng(_currentPosition.latitude, _currentPosition.longitude),
@@ -619,7 +620,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                 double.parse(ldataMesin[i].mesin_longitude)),
             builder: (context) => new Container(
                   child: Icon(
-                    Icons.person_pin_circle,
+                    Icons.account_circle_rounded,
                     color: Colors.red,
                   ),
                 )));
@@ -627,6 +628,27 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
       return marker;
     } else {
       return marker;
+    }
+  }
+
+  buildRadius() {
+    List<CircleMarker> circleRadius = List();
+    if (ldataMesin.length != 0) {
+      for (var i = 0; i < ldataMesin.length; i++) {
+        circleRadius.add(
+          CircleMarker(
+              point: LatLng(double.parse(ldataMesin[i].mesin_latitude),
+                  double.parse(ldataMesin[i].mesin_longitude)),
+              color: Colors.blue.withOpacity(0.3),
+              borderStrokeWidth: 3.0,
+              borderColor: Colors.blue,
+              useRadiusInMeter: true,
+              radius: 100),
+        );
+      }
+      return circleRadius;
+    } else {
+      return circleRadius;
     }
   }
 }
