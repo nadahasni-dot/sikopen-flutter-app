@@ -118,15 +118,15 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
   void setShift() {
     if (LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
         2) {
-      lshift.add(new Shift.setShift(1, "Non Shift Masuk"));
-      lshift.add(new Shift.setShift(2, "Non Shift Pulang"));
-    } else {
       lshift.add(new Shift.setShift(3, "Pagi Masuk"));
       lshift.add(new Shift.setShift(4, "Pagi Pulang"));
       lshift.add(new Shift.setShift(5, "Siang Masuk"));
       lshift.add(new Shift.setShift(6, "Siang Pulang"));
       lshift.add(new Shift.setShift(7, "Malam Masuk"));
       lshift.add(new Shift.setShift(8, "Malam Pulang"));
+    } else {
+      lshift.add(new Shift.setShift(1, "Non Shift Masuk"));
+      lshift.add(new Shift.setShift(2, "Non Shift Pulang"));
     }
     lshift.add(new Shift.setShift(9, "Lembur Masuk"));
     lshift.add(new Shift.setShift(10, "Lembur Pulang"));
