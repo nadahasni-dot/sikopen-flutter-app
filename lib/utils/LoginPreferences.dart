@@ -12,4 +12,5 @@ class LoginPreferences {
   static const String PAR_ID = 'PAR_ID';
   static const String USER_SALT_ENCRYPT = 'USER_SALT_ENCRYPT';
   static const String LOGGED_IN = 'LOGGED_IN';
+  static const String EMPLOYEE_GROUP_ID = 'EMPLOYE_GROUP_ID';
 }

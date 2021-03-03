@@ -87,6 +87,8 @@ class LoginFormState extends State<LoginForm> {
         LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, true);
         LoginPreferences.prefs.setString(LoginPreferences.EMPLOYEE_NIP,
             response.data['payload'][0]['employee']['employee_nip']);
+        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_GROUP_ID,
+            response.data['payload'][0]['employee']['group_id']);
         print(response.data['payload'][0]['employee']['employee_nip']);
         Navigator.pop(context);
         Navigator.pushNamed(context, MainScreen.routeName);
