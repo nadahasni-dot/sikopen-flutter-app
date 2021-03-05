@@ -121,12 +121,12 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
       lshift.add(new Shift.setShift(1, "Non Shift Masuk"));
       lshift.add(new Shift.setShift(2, "Non Shift Pulang"));
     } else {
-      lshift.add(new Shift.setShift(3, "Pagi Masuk"));
-      lshift.add(new Shift.setShift(4, "Pagi Pulang"));
-      lshift.add(new Shift.setShift(5, "Siang Masuk"));
-      lshift.add(new Shift.setShift(6, "Siang Pulang"));
-      lshift.add(new Shift.setShift(7, "Malam Masuk"));
-      lshift.add(new Shift.setShift(8, "Malam Pulang"));
+      lshift.add(new Shift.setShift(3, "Shift 1 Masuk"));
+      lshift.add(new Shift.setShift(4, "Shift 1 Pulang"));
+      lshift.add(new Shift.setShift(5, "Shift 2 Masuk"));
+      lshift.add(new Shift.setShift(6, "Shift 2 Pulang"));
+      lshift.add(new Shift.setShift(7, "Shift 3 Masuk"));
+      lshift.add(new Shift.setShift(8, "Shift 3 Pulang"));
     }
     lshift.add(new Shift.setShift(9, "Lembur Masuk"));
     lshift.add(new Shift.setShift(10, "Lembur Pulang"));
