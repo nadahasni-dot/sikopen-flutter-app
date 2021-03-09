@@ -170,8 +170,16 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
     }).catchError((error) => print(error));
 
     _checkClockTypes = [
-      '11. Dinas Luar In',
-      '12. Dinas Luar Out',
+      'WFH Non Shift Masuk',
+      'WFH Non Shift Pulang',
+      'WFH Shift 1 Masuk',
+      'WFH Shift 1 Pulang',
+      'WFH Shift 2 Masuk',
+      'WFH Shift 2 Pulang',
+      'WFH Shift 3 Masuk',
+      'WFH Shift 3 Pulang',
+      'Dinas Luar In',
+      'Dinas Luar Out'
     ];
     _selectedType = _checkClockTypes[0];
     _timeString = _formatDateTime(DateTime.now());
@@ -258,11 +266,28 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
                       onChanged: (value) {
                         setState(() {
                           _selectedType = value;
-                          if (_selectedType == '11. Dinas Luar In') {
-                            _ccType = 1;
-                          } else {
-                            _ccType = 2;
+                          if (_selectedType == 'Dinas Luar In') {
+                            _ccType = 11;
+                          } else if (_selectedType == 'Dinas Luar Out') {
+                            _ccType = 12;
+                          } else if (_selectedType == 'WFH Non Shift Masuk') {
+                            _ccType = 13;
+                          } else if (_selectedType == 'WFH Non Shift Pulang') {
+                            _ccType = 14;
+                          } else if (_selectedType == 'WFH Shift 1 Masuk') {
+                            _ccType = 15;
+                          } else if (_selectedType == 'WFH Shift 1 Pulang') {
+                            _ccType = 16;
+                          } else if (_selectedType == 'WFH Shift 2 Masuk') {
+                            _ccType = 17;
+                          } else if (_selectedType == 'WFH Shift 2 Pulang') {
+                            _ccType = 18;
+                          } else if (_selectedType == 'WFH Shift 3 Masuk') {
+                            _ccType = 19;
+                          } else if (_selectedType == 'WFH Shift 3 Pulang') {
+                            _ccType = 20;
                           }
+                          print('ccType: ' + _ccType.toString());
                         });
                       },
                     ),
