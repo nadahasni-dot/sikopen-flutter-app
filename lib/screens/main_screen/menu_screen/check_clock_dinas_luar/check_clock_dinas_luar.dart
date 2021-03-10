@@ -169,18 +169,34 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
       // _toggleListening();
     }).catchError((error) => print(error));
 
-    _checkClockTypes = [
-      'WFH Non Shift Masuk',
-      'WFH Non Shift Pulang',
-      'WFH Shift 1 Masuk',
-      'WFH Shift 1 Pulang',
-      'WFH Shift 2 Masuk',
-      'WFH Shift 2 Pulang',
-      'WFH Shift 3 Masuk',
-      'WFH Shift 3 Pulang',
-      'Dinas Luar In',
-      'Dinas Luar Out'
-    ];
+    if (LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
+        2) {
+      _checkClockTypes = [
+        'WFH Shift 1 Masuk',
+        'WFH Shift 1 Pulang',
+        'WFH Shift 2 Masuk',
+        'WFH Shift 2 Pulang',
+        'WFH Shift 3 Masuk',
+        'WFH Shift 3 Pulang',
+      ];
+    } else if (LoginPreferences.prefs
+            .getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
+        5) {
+      _checkClockTypes = [
+        'WFH Shift 1 Masuk',
+        'WFH Shift 1 Pulang',
+        'WFH Shift 3 Masuk',
+        'WFH Shift 3 Pulang',
+      ];
+    } else {
+      _checkClockTypes = [
+        'WFH Non Shift Masuk',
+        'WFH Non Shift Pulang',
+      ];
+    }
+    _checkClockTypes.add('Dinas Luar In');
+    _checkClockTypes.add('Dinas Luar Out');
+
     _selectedType = _checkClockTypes[0];
     _timeString = _formatDateTime(DateTime.now());
     _timer = Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());

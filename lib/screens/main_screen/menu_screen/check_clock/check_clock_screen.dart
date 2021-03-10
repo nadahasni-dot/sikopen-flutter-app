@@ -124,12 +124,20 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
       lshift.add(new Shift.setShift(6, "Shift 2 Pulang"));
       lshift.add(new Shift.setShift(7, "Shift 3 Masuk"));
       lshift.add(new Shift.setShift(8, "Shift 3 Pulang"));
+    } else if (LoginPreferences.prefs
+            .getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
+        5) {
+      lshift.add(new Shift.setShift(3, "Shift 1 Masuk"));
+      lshift.add(new Shift.setShift(4, "Shift 1 Pulang"));
+      lshift.add(new Shift.setShift(7, "Shift 3 Masuk"));
+      lshift.add(new Shift.setShift(8, "Shift 3 Pulang"));
     } else {
       lshift.add(new Shift.setShift(1, "Non Shift Masuk"));
       lshift.add(new Shift.setShift(2, "Non Shift Pulang"));
     }
     lshift.add(new Shift.setShift(9, "Lembur Masuk"));
     lshift.add(new Shift.setShift(10, "Lembur Pulang"));
+
     _selectedType = lshift[0].nama_cc;
     _ccType = lshift[0].value;
   }
