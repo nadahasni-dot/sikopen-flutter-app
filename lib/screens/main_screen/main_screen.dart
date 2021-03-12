@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hello_world_app/globals/ApiEndpoints.dart';
 import 'package:hello_world_app/screens/login_screen/login_screen.dart';
 import 'package:hello_world_app/screens/main_screen/drawer_configuration.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/change_password_screen.dart';
@@ -23,12 +25,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   String _appTitle = 'Home';
   String _currentMenu = DrawerConfiguration.MENU_HOME;
-  bool _isDeviceActivated;
+  bool _isDeviceActivated = false;
   Widget _menuWidget;
 
   @override
   void initState() {
-    _checkUidStatus();
+    // _checkUidStatus();
+    _checkUidActivation();
     print('status uid: $_isDeviceActivated');
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
@@ -186,7 +189,26 @@ class _MainScreenState extends State<MainScreen> {
     Widget continueButton = FlatButton(
       child: Text("Logout"),
       onPressed: () async {
+        // ? clear login session
         LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, false);
+        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_ID,
+            null);
+        LoginPreferences.prefs.setInt(
+            LoginPreferences.USER_ID, null);
+        LoginPreferences.prefs.setString(LoginPreferences.USER_NAME,
+            null);
+        LoginPreferences.prefs.setBool(LoginPreferences.USER_STATUS,
+            null);
+        LoginPreferences.prefs.setString(LoginPreferences.PERSON_NAME,
+            null);
+        LoginPreferences.prefs.setInt(
+            LoginPreferences.PAR_ID, null);
+        LoginPreferences.prefs.setString(LoginPreferences.USER_SALT_ENCRYPT,
+            null);        
+        LoginPreferences.prefs.setString(LoginPreferences.EMPLOYEE_NIP,
+            null);
+        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_GROUP_ID,
+            null);
         // await LoginPreferences.prefs.clear();
 
         print('logged out');
@@ -221,17 +243,100 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _checkUidStatus() {
-    _isDeviceActivated = DeviceRegPreferences.getUidStatus();
+    setState(() {
+      _isDeviceActivated = DeviceRegPreferences.getUidStatus();
+    });
+
+    print(LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_ID));
+    print(
+        'check uid status: ' + DeviceRegPreferences.getUidStatus().toString());
 
     if (_isDeviceActivated == false) {
-      _menuWidget = RegistrasiDeviceScreen();
       setState(() {
+        _menuWidget = RegistrasiDeviceScreen();
         _appTitle = DrawerConfiguration.MENU_REGISTRASI_DEVICE;
         _currentMenu = DrawerConfiguration.MENU_REGISTRASI_DEVICE;
       });
       return;
     }
-    _menuWidget = CheckClockScreen();
+
+    setState(() {
+      _menuWidget = CheckClockScreen();
+      _appTitle = DrawerConfiguration.MENU_HOME;
+      _currentMenu = DrawerConfiguration.MENU_HOME;
+    });
+  }
+
+  void _checkUidActivation() async {
+    Dio _dio = new Dio();
+    Response response;
+    _dio.options.connectTimeout = 8000;
+    _dio.options.receiveTimeout = 3000;
+
+    try {
+      response = await _dio.get(ApiEndpoints.GET_UID_ACTIVATION_STATUS +
+          LoginPreferences.prefs
+              .getInt(LoginPreferences.EMPLOYEE_ID)
+              .toString() +
+          '&uid=' +
+          DeviceRegPreferences.getUid());
+
+      if (response.statusCode == 200) {
+        if (response.data['result'] > 0) {
+          // jika uid sudah diaprove maka simpan status request true
+          DeviceRegPreferences.prefs
+              .setBool(DeviceRegPreferences.UID_STATUS, true);
+        } else {
+          DeviceRegPreferences.prefs
+              .setBool(DeviceRegPreferences.UID_STATUS, false);
+        }
+
+        print('check status: $response.data');
+        print('status after check ' +
+            DeviceRegPreferences.getUidStatus().toString());
+      }
+      _checkUidStatus();
+    } on DioError catch (e) {
+      // if error on sending request
+      setState(() {
+        _menuWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Terjadi Kesalahan',
+              textAlign: TextAlign.center,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  _checkUidActivation();
+                },
+                child: Text('Coba Lagi'),
+              ),
+            ),
+          ],
+        );
+      });
+
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          print('connection time out');
+          return;
+          break;
+        case DioErrorType.DEFAULT:
+          print('default error');
+          return;
+          break;
+        case DioErrorType.CANCEL:
+          print('canceled');
+          return;
+          break;
+        default:
+          print('another error occured');
+      }
+    }
   }
 
   Widget _getActiveMenuWidget(String selectedMenu) {
