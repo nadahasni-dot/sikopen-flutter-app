@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
 import 'package:hello_world_app/helper/Md5Converter.dart';
 import 'package:hello_world_app/screens/main_screen/main_screen.dart';
+import 'package:hello_world_app/utils/DeviceRegPreferences.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:dio/dio.dart';
+import 'package:uuid/uuid.dart';
 
 // Create a Form widget.
 class LoginForm extends StatefulWidget {
@@ -69,6 +71,7 @@ class LoginFormState extends State<LoginForm> {
         _isProcessingRequest = false;
       });
 
+      // ? login berhasil
       if (response.statusCode == 200) {
         LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_ID,
             response.data['payload'][0]['employee_id']);
@@ -90,8 +93,13 @@ class LoginFormState extends State<LoginForm> {
         LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_GROUP_ID,
             response.data['payload'][0]['employee']['group_id']);
         print(response.data['payload'][0]['employee']['employee_nip']);
-        Navigator.pop(context);
-        Navigator.pushNamed(context, MainScreen.routeName);
+
+        // ? check uid dari user yang login apakah telah terdaftar
+        _checkUidActivation(response.data['payload'][0]['employee_id'].toString());
+
+        // // ? goto main
+        // Navigator.pop(context);
+        // Navigator.pushNamed(context, MainScreen.routeName);
       }
     } on DioError catch (e) {
       setState(() {
@@ -227,5 +235,77 @@ class LoginFormState extends State<LoginForm> {
     setState(() {
       _passwordVisibility = !_passwordVisibility;
     });
+  }
+
+  void _checkUidActivation(String employee_id) async {
+    Dio _dio = new Dio();
+    Response response;
+    _dio.options.connectTimeout = 8000;
+    _dio.options.receiveTimeout = 3000;
+
+    try {
+      response = await _dio.get(ApiEndpoints.GET_UID_ACTIVATION_STATUS +
+          employee_id +
+          '&uid=' +
+          DeviceRegPreferences.getUid());
+
+      if (response.statusCode == 200) {
+        if (response.data['result'] > 0) {
+          print('uid dan employee id telah tedaftar');
+          // jika uid sudah diaprove maka simpan status request true
+          DeviceRegPreferences.prefs
+              .setBool(DeviceRegPreferences.UID_STATUS, true);
+          DeviceRegPreferences.prefs
+              .setBool(DeviceRegPreferences.UID_REQUEST, true);
+        } else {
+          DeviceRegPreferences.prefs
+              .setBool(DeviceRegPreferences.UID_STATUS, false);
+          DeviceRegPreferences.prefs
+              .setBool(DeviceRegPreferences.UID_REQUEST, false);
+          
+          // ! generate uid baru
+          DeviceRegPreferences.prefs.setString(DeviceRegPreferences.UID, null);
+          DeviceRegPreferences.prefs.setString(DeviceRegPreferences.UID, Uuid().v1());
+
+          print('uid dan employee id tidak cocok');
+          print('generated new uid: ' + DeviceRegPreferences.prefs.getString(DeviceRegPreferences.UID));
+          print('uid aktivasi status: ' +
+              DeviceRegPreferences.prefs
+                  .getBool(DeviceRegPreferences.UID_STATUS)
+                  .toString());
+          print('request status: ' +
+              DeviceRegPreferences.prefs
+                  .getBool(DeviceRegPreferences.UID_REQUEST)
+                  .toString());
+        }
+
+        // print('check status: $response.data');
+        // print('status after check ' +
+        //     DeviceRegPreferences.getUidStatus().toString());
+
+        // ? goto main
+        Navigator.pop(context);
+        Navigator.pushNamed(context, MainScreen.routeName);
+      }
+    } on DioError catch (e) {
+      // if error on sending request
+
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          print('connection time out');
+          return;
+          break;
+        case DioErrorType.DEFAULT:
+          print('default error');
+          return;
+          break;
+        case DioErrorType.CANCEL:
+          print('canceled');
+          return;
+          break;
+        default:
+          print('another error occured');
+      }
+    }
   }
 }

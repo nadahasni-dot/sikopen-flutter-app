@@ -13,6 +13,7 @@ import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_cuti/p
 import 'package:hello_world_app/screens/main_screen/menu_screen/registrasi_device_screen.dart';
 import 'package:hello_world_app/utils/DeviceRegPreferences.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
+import 'package:uuid/uuid.dart';
 
 class MainScreen extends StatefulWidget {
   static const routeName = '/main';
@@ -209,6 +210,14 @@ class _MainScreenState extends State<MainScreen> {
             null);
         LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_GROUP_ID,
             null);
+
+        // ? generate new uid
+        // DeviceRegPreferences.prefs.setString(DeviceRegPreferences.UID, null);
+        // DeviceRegPreferences.prefs.setString(DeviceRegPreferences.UID, Uuid().v1());
+
+        // ? clear uid request and activation status
+        // DeviceRegPreferences.prefs.setBool(DeviceRegPreferences.UID_REQUEST, false);
+        // DeviceRegPreferences.prefs.setBool(DeviceRegPreferences.UID_STATUS, false);
         // await LoginPreferences.prefs.clear();
 
         print('logged out');
