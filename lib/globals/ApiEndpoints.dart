@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const String BASE_URL = 'https://dev.sabinsolusi.com/sikopen-api/';
+  static const String BASE_URL = 'https://live.sabinsolusi.com/sikopen-api/';
   static const String POST_CHANGE_PASSWORD = BASE_URL + 'changepassword';
   static const String POST_LOGIN = BASE_URL + 'auth';
   static const String POST_PRESENCE = BASE_URL + 'presence/check-clock';
@@ -20,4 +20,6 @@ class ApiEndpoints {
   static const String GET_UID_ACTIVATION_STATUS =
       BASE_URL + 'registrasi-uid/uid?employee_id=';
   static const String POST_UID_REGISTRATION = BASE_URL + 'registrasi-uid';
+
+  static const String GET_SHIFT = BASE_URL + "pilihanabsen/get?";
 }

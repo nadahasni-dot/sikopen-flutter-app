@@ -5,6 +5,7 @@ import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/shift2.dart';
 import 'package:dio/dio.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -27,6 +28,7 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
   final double zoomClose = 17.0;
   Position _currentPosition;
   bool serviceEnabled;
+  List<Shift2> lshift = new List();
   LocationPermission permission;
   final MapController _mapController = MapController();
   final LatLng _jakarta = LatLng(-6.1275785, 106.8356448);
@@ -85,6 +87,70 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
           (error) => print(error.toString() + " null pada lastKnown"));
     } catch (e) {
       print("Error pada get current position " + e.toString());
+    }
+  }
+
+  Future<String> _getShift() async {
+    Dio _dio = new Dio();
+    Response response;
+    _dio.options.connectTimeout = 20000;
+    _dio.options.receiveTimeout = 3000;
+
+    try {
+      response = await _dio.get(ApiEndpoints.GET_SHIFT +
+          "group_id=" +
+          LoginPreferences.prefs
+              .getInt(LoginPreferences.EMPLOYEE_GROUP_ID)
+              .toString() +
+          "&tipe=2");
+
+      List<Shift2> lshiftTemp = List();
+      if (response.statusCode == 200) {
+        print("berhasil mengambil");
+        for (var i = 0; i < response.data.length - 1; i++) {
+          lshiftTemp.add(Shift2.fromJson(response.data[i.toString()]));
+        }
+        setState(() {
+          lshift = lshiftTemp;
+          _selectedType = lshift[0].nama;
+          _ccType = lshift[0].id;
+        });
+        return "Load data sukses";
+      }
+    } on DioError catch (e) {
+      // if error on sending request
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          // _responseText = "Connection time out";
+          return "Connection time out pada data ketidakhadiran";
+          break;
+        case DioErrorType.DEFAULT:
+          // _responseText = "Terjadi error. Harap coba beberapa saat lagi";
+          return "Terjadi error. Harap coba beberapa saat lagi";
+          break;
+        case DioErrorType.CANCEL:
+          // _responseText = "Request canceled";
+          return "Request canceled";
+          break;
+        default:
+          // _responseText = "another error occured";
+          return "another error occured";
+      }
+      switch (e.response.statusCode) {
+        case 401:
+          // _responseText = "Data tidak ditemukan";
+          return "Data tidak ditemukan";
+          break;
+        case 500:
+          // _responseText = "Server Error. Harap coba beberapa saat lagi";
+          return "Server Error. Harap coba beberapa saat lagi";
+          break;
+        default:
+          // _responseText = "Terjadi Error. Harap coba beberapa saat lagi";
+          return '"Terjadi Error. Harap coba beberapa saat lagi"';
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -154,6 +220,7 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
   void initState() {
     print('start pos: ' + _currentPosition.toString());
     // run listen location first, and changes
+    _getShift();
     _getLastKnownLocation();
     _toggleListening();
 
@@ -169,35 +236,35 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
       // _toggleListening();
     }).catchError((error) => print(error));
 
-    if (LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
-        2) {
-      _checkClockTypes = [
-        'WFH Shift 1 Masuk',
-        'WFH Shift 1 Pulang',
-        'WFH Shift 2 Masuk',
-        'WFH Shift 2 Pulang',
-        'WFH Shift 3 Masuk',
-        'WFH Shift 3 Pulang',
-      ];
-    } else if (LoginPreferences.prefs
-            .getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
-        5) {
-      _checkClockTypes = [
-        'WFH Shift 1 Masuk',
-        'WFH Shift 1 Pulang',
-        'WFH Shift 3 Masuk',
-        'WFH Shift 3 Pulang',
-      ];
-    } else {
-      _checkClockTypes = [
-        'WFH Non Shift Masuk',
-        'WFH Non Shift Pulang',
-      ];
-    }
-    _checkClockTypes.add('Dinas Luar In');
-    _checkClockTypes.add('Dinas Luar Out');
+    // if (LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
+    //     2) {
+    //   _checkClockTypes = [
+    //     'WFH Shift 1 Masuk',
+    //     'WFH Shift 1 Pulang',
+    //     'WFH Shift 2 Masuk',
+    //     'WFH Shift 2 Pulang',
+    //     'WFH Shift 3 Masuk',
+    //     'WFH Shift 3 Pulang',
+    //   ];
+    // } else if (LoginPreferences.prefs
+    //         .getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
+    //     5) {
+    //   _checkClockTypes = [
+    //     'WFH Shift 1 Masuk',
+    //     'WFH Shift 1 Pulang',
+    //     'WFH Shift 3 Masuk',
+    //     'WFH Shift 3 Pulang',
+    //   ];
+    // } else {
+    //   _checkClockTypes = [
+    //     'WFH Non Shift Masuk',
+    //     'WFH Non Shift Pulang',
+    //   ];
+    // }
+    // _checkClockTypes.add('Dinas Luar In');
+    // _checkClockTypes.add('Dinas Luar Out');
 
-    _selectedType = _checkClockTypes[0];
+    // _selectedType = _checkClockTypes[0];
     _timeString = _formatDateTime(DateTime.now());
     _timer = Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
     super.initState();
@@ -273,37 +340,21 @@ class _CheckClockDinasLuarState extends State<CheckClockDinasLuar> {
                     child: DropdownButton(
                       isExpanded: true,
                       value: _selectedType,
-                      items: _checkClockTypes.map((value) {
+                      items: lshift.map((value) {
                         return DropdownMenuItem(
-                          child: Text(value),
-                          value: value,
+                          child: Text(value.nama),
+                          value: value.nama,
                         );
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedType = value;
-                          if (_selectedType == 'Dinas Luar In') {
-                            _ccType = 11;
-                          } else if (_selectedType == 'Dinas Luar Out') {
-                            _ccType = 12;
-                          } else if (_selectedType == 'WFH Non Shift Masuk') {
-                            _ccType = 13;
-                          } else if (_selectedType == 'WFH Non Shift Pulang') {
-                            _ccType = 14;
-                          } else if (_selectedType == 'WFH Shift 1 Masuk') {
-                            _ccType = 15;
-                          } else if (_selectedType == 'WFH Shift 1 Pulang') {
-                            _ccType = 16;
-                          } else if (_selectedType == 'WFH Shift 2 Masuk') {
-                            _ccType = 17;
-                          } else if (_selectedType == 'WFH Shift 2 Pulang') {
-                            _ccType = 18;
-                          } else if (_selectedType == 'WFH Shift 3 Masuk') {
-                            _ccType = 19;
-                          } else if (_selectedType == 'WFH Shift 3 Pulang') {
-                            _ccType = 20;
+                          for (var i = 0; i < lshift.length; i++) {
+                            if (lshift[i].nama == value) {
+                              _ccType = lshift[i].id;
+                              print(_ccType);
+                            }
                           }
-                          print('ccType: ' + _ccType.toString());
+                          _selectedType = value;
                         });
                       },
                     ),

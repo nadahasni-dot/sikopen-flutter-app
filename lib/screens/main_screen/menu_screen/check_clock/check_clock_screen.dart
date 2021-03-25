@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/mesin.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/shift.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock/shift2.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/check_clock_dinas_luar/loading_check_clock.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:intl/intl.dart';
@@ -35,7 +36,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
   final double zoomClose = 17.0;
   LatLng _defaultLocation = LatLng(-6.1275785, 106.8356448);
   final MapController _mapController = MapController();
-  List<Shift> lshift = new List();
+  List<Shift2> lshift = new List();
   List<Mesin> ldataMesin = List();
   bool islocationLoaded = false;
   bool locationLoaded = false;
@@ -115,38 +116,37 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
     }
   }
 
-  void setShift() {
-    if (LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
-        2) {
-      lshift.add(new Shift.setShift(3, "Shift 1 Masuk"));
-      lshift.add(new Shift.setShift(4, "Shift 1 Pulang"));
-      lshift.add(new Shift.setShift(5, "Shift 2 Masuk"));
-      lshift.add(new Shift.setShift(6, "Shift 2 Pulang"));
-      lshift.add(new Shift.setShift(7, "Shift 3 Masuk"));
-      lshift.add(new Shift.setShift(8, "Shift 3 Pulang"));
-    } else if (LoginPreferences.prefs
-            .getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
-        5) {
-      lshift.add(new Shift.setShift(3, "Shift 1 Masuk"));
-      lshift.add(new Shift.setShift(4, "Shift 1 Pulang"));
-      lshift.add(new Shift.setShift(7, "Shift 3 Masuk"));
-      lshift.add(new Shift.setShift(8, "Shift 3 Pulang"));
-    } else {
-      lshift.add(new Shift.setShift(1, "Non Shift Masuk"));
-      lshift.add(new Shift.setShift(2, "Non Shift Pulang"));
-    }
-    lshift.add(new Shift.setShift(9, "Lembur Masuk"));
-    lshift.add(new Shift.setShift(10, "Lembur Pulang"));
+  // void setShift() {
+  //   if (LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
+  //       2) {
+  //     lshift.add(new Shift.setShift(3, "Shift 1 Masuk"));
+  //     lshift.add(new Shift.setShift(4, "Shift 1 Pulang"));
+  //     lshift.add(new Shift.setShift(5, "Shift 2 Masuk"));
+  //     lshift.add(new Shift.setShift(6, "Shift 2 Pulang"));
+  //     lshift.add(new Shift.setShift(7, "Shift 3 Masuk"));
+  //     lshift.add(new Shift.setShift(8, "Shift 3 Pulang"));
+  //   } else if (LoginPreferences.prefs
+  //           .getInt(LoginPreferences.EMPLOYEE_GROUP_ID) ==
+  //       5) {
+  //     lshift.add(new Shift.setShift(3, "Shift 1 Masuk"));
+  //     lshift.add(new Shift.setShift(4, "Shift 1 Pulang"));
+  //     lshift.add(new Shift.setShift(7, "Shift 3 Masuk"));
+  //     lshift.add(new Shift.setShift(8, "Shift 3 Pulang"));
+  //   } else {
+  //     lshift.add(new Shift.setShift(1, "Non Shift Masuk"));
+  //     lshift.add(new Shift.setShift(2, "Non Shift Pulang"));
+  //   }
+  //   lshift.add(new Shift.setShift(9, "Lembur Masuk"));
+  //   lshift.add(new Shift.setShift(10, "Lembur Pulang"));
 
-    _selectedType = lshift[0].nama_cc;
-    _ccType = lshift[0].value;
-  }
+  //   _selectedType = lshift[0].nama_cc;
+  //   _ccType = lshift[0].value;
+  // }
 
   Future<String> _getMesin() async {
     Response response;
     _dio.options.connectTimeout = 20000;
     _dio.options.receiveTimeout = 3000;
-
     try {
       response = await _dio.get(ApiEndpoints.GET_MESIN_POINT);
 
@@ -159,6 +159,77 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
         setState(() {
           ldataMesin = lmesin;
           // _dataLoaded = true;
+        });
+        return "Load data sukses";
+      }
+    } on DioError catch (e) {
+      // if error on sending request
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          // _responseText = "Connection time out";
+          return "Connection time out pada data ketidakhadiran";
+          break;
+        case DioErrorType.DEFAULT:
+          // _responseText = "Terjadi error. Harap coba beberapa saat lagi";
+          return "Terjadi error. Harap coba beberapa saat lagi";
+          break;
+        case DioErrorType.CANCEL:
+          // _responseText = "Request canceled";
+          return "Request canceled";
+          break;
+        default:
+          // _responseText = "another error occured";
+          return "another error occured";
+      }
+      switch (e.response.statusCode) {
+        case 401:
+          // _responseText = "Data tidak ditemukan";
+          return "Data tidak ditemukan";
+          break;
+        case 500:
+          // _responseText = "Server Error. Harap coba beberapa saat lagi";
+          return "Server Error. Harap coba beberapa saat lagi";
+          break;
+        default:
+          // _responseText = "Terjadi Error. Harap coba beberapa saat lagi";
+          return '"Terjadi Error. Harap coba beberapa saat lagi"';
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  //--- BARU --//
+  Future<String> _getShift() async {
+    print("Cek GROUP ID : " +
+        ApiEndpoints.GET_SHIFT +
+        "group_id=" +
+        LoginPreferences.prefs
+            .getInt(LoginPreferences.EMPLOYEE_GROUP_ID)
+            .toString() +
+        "&tipe=1");
+    Response response;
+    _dio.options.connectTimeout = 20000;
+    _dio.options.receiveTimeout = 3000;
+
+    try {
+      response = await _dio.get(ApiEndpoints.GET_SHIFT +
+          "group_id=" +
+          LoginPreferences.prefs
+              .getInt(LoginPreferences.EMPLOYEE_GROUP_ID)
+              .toString() +
+          "&tipe=1");
+
+      List<Shift2> lshiftTemp = List();
+      if (response.statusCode == 200) {
+        print("berhasil mengambil");
+        for (var i = 0; i < response.data.length - 1; i++) {
+          lshiftTemp.add(Shift2.fromJson(response.data[i.toString()]));
+        }
+        setState(() {
+          lshift = lshiftTemp;
+          _selectedType = lshift[0].nama;
+          _ccType = lshift[0].id;
         });
         return "Load data sukses";
       }
@@ -430,6 +501,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
 
   @override
   void initState() {
+    _getShift();
     checkGPS();
     _getMesin().then((value) {
       if (locationLoaded) {
@@ -439,7 +511,7 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
 
     jarak = 999999999999999;
 
-    setShift();
+    // setShift();
 
     _timeString = _formatDateTime(DateTime.now());
     super.initState();
@@ -549,15 +621,15 @@ class _CheckClockScreenState extends State<CheckClockScreen> {
                         value: _selectedType,
                         items: lshift.map((value) {
                           return DropdownMenuItem(
-                            child: Text(value.nama_cc),
-                            value: value.nama_cc,
+                            child: Text(value.nama),
+                            value: value.nama,
                           );
                         }).toList(),
                         onChanged: (value) {
                           setState(() {
                             for (var i = 0; i < lshift.length; i++) {
-                              if (lshift[i].nama_cc == value) {
-                                _ccType = lshift[i].value;
+                              if (lshift[i].nama == value) {
+                                _ccType = lshift[i].id;
                                 print(_ccType);
                               }
                             }

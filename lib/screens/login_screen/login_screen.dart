@@ -61,7 +61,7 @@ class LoginScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              'version 1.0.3',
+                              'version 1.0.4',
                               textAlign: TextAlign.center,
                             ),
                             TextButton(
@@ -98,8 +98,19 @@ class LoginScreen extends StatelessWidget {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Text(
-              'versi 1.0.3 (2021/03/12):',
+              'versi 1.0.4 (2021/03/25):',
               style: TextStyle(fontSize: 10.0, color: Colors.green),
+            ),
+            Text(
+              '- mengintegrasikan dropdown shift pada API',
+              style: TextStyle(fontSize: 10.0),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            Text(
+              'versi 1.0.3 (2021/03/12):',
+              style: TextStyle(fontSize: 10.0),
             ),
             Text(
               '- menyesuaikan pilihan dropdown absensi sesuai grup',
