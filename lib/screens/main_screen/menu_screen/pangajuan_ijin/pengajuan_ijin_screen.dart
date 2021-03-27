@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/data_ketidakhadiran_screen.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/dropdown_ijin.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -14,9 +15,12 @@ class PengajuanIjinScreen extends StatefulWidget {
 
 class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
   var _formKey;
-  List ijin = ["Sakit", "Ijin"];
-  List<DropdownMenuItem<String>> _dropDownIjinItems;
-  String _currentIjin;
+
+  List<DropdownIjin> ijin = new List();
+
+  List<DropdownMenuItem<DropdownIjin>> _dropDownIjinItems;
+
+  DropdownIjin _currentIjin;
   bool _isProcessingRequest;
 
   TextEditingController tanggalAwalController;
@@ -26,10 +30,9 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
 
   @override
   void initState() {
-    _dropDownIjinItems = getDropDownMenuItems();
-    _currentIjin = _dropDownIjinItems[0].value;
-    _formKey = GlobalKey<FormState>();
-    _isProcessingRequest = false;
+    _getDropdownIjin(context);
+
+    _formKey = GlobalKey<FormState>();    
 
     tanggalAwalController = TextEditingController(
         text:
@@ -45,18 +48,20 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
     super.initState();
   }
 
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (String data in ijin) {
+  List<DropdownMenuItem<DropdownIjin>> getDropDownMenuItems() {
+    List<DropdownMenuItem<DropdownIjin>> items = new List();
+    for (DropdownIjin data in ijin) {
       items.add(new DropdownMenuItem(
-        value: data,
-        child: new Text(data),
+        value: new DropdownIjin(
+            id: data.ijinId, nama: data.ijinNama, is_aktif: data.ijinAktif),
+        child: new Text(data.ijinNama),
       ));
     }
     return items;
   }
 
-  void changedDropDwonItem(String selectedItem) {
+  void changedDropDwonItem(DropdownIjin selectedItem) {
+    print('selected item: ' + selectedItem.toString());
     setState(() {
       _currentIjin = selectedItem;
     });
@@ -67,6 +72,95 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
       context,
       MaterialPageRoute(builder: (context) => Dataketidakhadiran()),
     );
+  }
+
+  void _getDropdownIjin(BuildContext context) async {
+    Dio _dio = new Dio();
+    Response response;
+    _dio.options.connectTimeout = 8000;
+    _dio.options.receiveTimeout = 3000;
+
+    setState(() {
+      _isProcessingRequest = true;
+    });    
+
+    try {
+      response = await _dio.get(ApiEndpoints.GET_DROPDOWN_IJIN);
+
+      setState(() {
+        _isProcessingRequest = false;
+      });
+
+      if (response.statusCode == 200) {
+        print('berhasil mendapat data jenis dropdown ijin');
+
+        List<DropdownIjin> tempList = new List();
+
+        for (var i = 0; i < response.data.length - 1; i++) {
+          tempList.add(DropdownIjin.fromJson(response.data[i.toString()]));
+        }
+
+        setState(() {
+          ijin = tempList;
+          _dropDownIjinItems = getDropDownMenuItems();
+          _currentIjin = _dropDownIjinItems[0].value;
+        });        
+
+        print('load dropdown sukses');
+      }
+    } on DioError catch (e) {
+      setState(() {
+        _isProcessingRequest = false;
+      });
+
+      // if error on sending request
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Connection time out. Harap periksa koneksi anda"),
+          ));
+          print('connection time out');
+          return;
+          break;
+        case DioErrorType.DEFAULT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Terjadi error. Harap coba beberapa saat lagi"),
+          ));
+          print('default error');
+          return;
+          break;
+        case DioErrorType.CANCEL:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Request canceled"),
+          ));
+          print('canceled');
+          return;
+          break;
+        default:
+          print('another error occured');
+      }
+
+      // if error on status code
+      switch (e.response.statusCode) {
+        case 401:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Username atau password anda tidak sesuai"),
+          ));
+          return;
+          break;
+        case 500:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Server Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+          break;
+        default:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Terjadi Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+      }
+    }
   }
 
   void _postKetidakhadiran(BuildContext context, int pegawaiId, String mulai,
@@ -306,13 +400,25 @@ class _PengajuanIjinScreenState extends State<PengajuanIjinScreen> {
                                         if (_currentIjin == "Ijin") {
                                           fk = "I";
                                         }
+
+                                        if (_currentIjin == null) {
+                                          return false;
+                                        }
+                                        // _postKetidakhadiran(
+                                        //     context,
+                                        //     LoginPreferences.prefs.getInt(
+                                        //         LoginPreferences.EMPLOYEE_ID),
+                                        //     tanggalAwalController.text,
+                                        //     tanggalAkhirController.text,
+                                        //     fk,
+                                        //     keteranganController.text);
                                         _postKetidakhadiran(
                                             context,
                                             LoginPreferences.prefs.getInt(
                                                 LoginPreferences.EMPLOYEE_ID),
                                             tanggalAwalController.text,
                                             tanggalAkhirController.text,
-                                            fk,
+                                            _currentIjin.ijinId,
                                             keteranganController.text);
                                       }
                                     },

@@ -18,6 +18,7 @@ class _DataketidakhadiranState extends State<Dataketidakhadiran> {
   List<Ketidakhadiran> dataKetidakhadiran = new List();
   ProgressDialog pr;
   bool _dataLoaded = false;
+  bool _isSnackbarActive = false;
   Dio _dio = new Dio();
   String _responseText = "Fetching data ...";
 
@@ -177,7 +178,11 @@ class _DataketidakhadiranState extends State<Dataketidakhadiran> {
 
   _displaySnackBar(BuildContext context, String text) {
     final snackBar = SnackBar(content: Text(text));
-    scaffoldState.currentState.showSnackBar(snackBar);
+    _isSnackbarActive = true;
+
+    scaffoldState.currentState.showSnackBar(snackBar).closed.then((reason) {
+      _isSnackbarActive = false;
+    });
   }
 
   @override
@@ -323,6 +328,11 @@ class _DataketidakhadiranState extends State<Dataketidakhadiran> {
                                                       BorderRadius.circular(10),
                                                   splashColor: Colors.amber,
                                                   onTap: () {
+                                                    // ! menghalangi progress dialog crash. agar tidak bisa submit bersamaan saat snackbar masih tampil
+                                                    if (_isSnackbarActive) {
+                                                      return;
+                                                    }
+
                                                     pr.show();
                                                     postKirimDataKetidakhadiran(
                                                             data.tdkhadir_id)
@@ -330,6 +340,9 @@ class _DataketidakhadiranState extends State<Dataketidakhadiran> {
                                                       pr.hide();
                                                       _displaySnackBar(
                                                           context, value);
+                                                    }).catchError((onError) {
+                                                      pr.hide();
+                                                      print('error');
                                                     });
                                                   },
                                                   child: Center(

@@ -22,4 +22,6 @@ class ApiEndpoints {
   static const String POST_UID_REGISTRATION = BASE_URL + 'registrasi-uid';
 
   static const String GET_SHIFT = BASE_URL + "pilihanabsen/get?";
+  
+  static const String GET_DROPDOWN_IJIN = BASE_URL + "tdkhadir/get-masterpresensi";
 }

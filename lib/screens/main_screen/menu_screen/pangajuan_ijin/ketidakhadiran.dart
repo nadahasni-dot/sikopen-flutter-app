@@ -16,8 +16,13 @@ class Ketidakhadiran {
 
   factory Ketidakhadiran.fromJson(Map<String, dynamic> json) {
     var fk = 'Sakit';
+
     if (json['fk_tidak_hadir'] == 'I') {
       fk = 'Ijin';
+    }
+
+    if (json['fk_tidak_hadir'] == 'CT') {
+      fk = 'Cuti Tahunan';
     }
 
     return Ketidakhadiran(

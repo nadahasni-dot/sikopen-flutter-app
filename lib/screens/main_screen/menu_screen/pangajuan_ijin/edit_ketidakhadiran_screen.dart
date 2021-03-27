@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hello_world_app/globals/ApiEndpoints.dart';
+import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/dropdown_ijin.dart';
 import 'package:hello_world_app/utils/LoginPreferences.dart';
 import 'package:hello_world_app/screens/main_screen/menu_screen/pangajuan_ijin/ketidakhadiran.dart';
 import 'package:intl/intl.dart';
@@ -26,9 +27,9 @@ class _EditKetidakhadiranState extends State<EditKetidakhadiran> {
   bool __dataLoaded = false;
   var _formKey;
   GlobalKey<ScaffoldState> scaffoldState = new GlobalKey();
-  List ijin = ["Sakit", "Ijin"];
-  List<DropdownMenuItem<String>> _dropDownIjinItems;
-  String _currentIjin;
+  List<DropdownIjin> ijin = new List();
+  List<DropdownMenuItem<DropdownIjin>> _dropDownIjinItems;
+  DropdownIjin _currentIjin;
   Ketidakhadiran dataKetidakhadiran = new Ketidakhadiran();
   String _responseText = "Fetching data ...";
   ProgressDialog pr;
@@ -39,18 +40,18 @@ class _EditKetidakhadiranState extends State<EditKetidakhadiran> {
   TextEditingController namaPegawaiController;
   TextEditingController keteranganController;
 
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (String data in ijin) {
+  List<DropdownMenuItem<DropdownIjin>> getDropDownMenuItems() {
+    List<DropdownMenuItem<DropdownIjin>> items = new List();
+    for (DropdownIjin data in ijin) {
       items.add(new DropdownMenuItem(
         value: data,
-        child: new Text(data),
+        child: new Text(data.ijinNama),
       ));
     }
     return items;
   }
 
-  void changedDropDwonItem(String selectedItem) {
+  void changedDropDwonItem(DropdownIjin selectedItem) {
     setState(() {
       _currentIjin = selectedItem;
     });
@@ -70,7 +71,7 @@ class _EditKetidakhadiranState extends State<EditKetidakhadiran> {
             LoginPreferences.prefs.getInt(LoginPreferences.EMPLOYEE_ID),
         'mulai': tanggalAwalController.text,
         'akhir': tanggalAkhirController.text,
-        'fk_tidak_hadir': (_currentIjin == 'Sakit') ? 'S' : 'I',
+        'fk_tidak_hadir': _currentIjin.ijinId,
         'keterangan': keteranganController.text
       });
 
@@ -107,6 +108,85 @@ class _EditKetidakhadiranState extends State<EditKetidakhadiran> {
     }
   }
 
+  void _getDropdownIjin(BuildContext context) async {
+    Dio _dio = new Dio();
+    Response response;
+    _dio.options.connectTimeout = 8000;
+    _dio.options.receiveTimeout = 3000;
+
+    try {
+      response = await _dio.get(ApiEndpoints.GET_DROPDOWN_IJIN);
+
+      if (response.statusCode == 200) {
+        print('berhasil mendapat data jenis dropdown ijin');
+
+        List<DropdownIjin> tempList = new List();
+
+        for (var i = 0; i < response.data.length - 1; i++) {
+          tempList.add(DropdownIjin.fromJson(response.data[i.toString()]));
+        }
+
+        setState(() {
+          ijin = tempList;
+          _dropDownIjinItems = getDropDownMenuItems();
+          // _currentIjin = _dropDownIjinItems[0].value;
+        });
+
+        _getDataKetidakhadiranPegawai();
+
+        print('load dropdown sukses');
+      }
+    } on DioError catch (e) {
+      // if error on sending request
+      switch (e.type) {
+        case DioErrorType.CONNECT_TIMEOUT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Connection time out. Harap periksa koneksi anda"),
+          ));
+          print('connection time out');
+          return;
+          break;
+        case DioErrorType.DEFAULT:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Terjadi error. Harap coba beberapa saat lagi"),
+          ));
+          print('default error');
+          return;
+          break;
+        case DioErrorType.CANCEL:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Request canceled"),
+          ));
+          print('canceled');
+          return;
+          break;
+        default:
+          print('another error occured');
+      }
+
+      // if error on status code
+      switch (e.response.statusCode) {
+        case 401:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Username atau password anda tidak sesuai"),
+          ));
+          return;
+          break;
+        case 500:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Server Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+          break;
+        default:
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Terjadi Error. Harap coba beberapa saat lagi"),
+          ));
+          return;
+      }
+    }
+  }
+
   Future<String> _getDataKetidakhadiranPegawai() async {
     print("Kode yg dikirimkan = " + widget.kode.toString());
     Response response;
@@ -129,7 +209,18 @@ class _EditKetidakhadiranState extends State<EditKetidakhadiran> {
             text: DateFormat('dd-MM-yyyy').format(tglAwal).toString());
         tanggalAkhirController = TextEditingController(
             text: DateFormat('dd-MM-yyyy').format(tglAkhir).toString());
-        _currentIjin = dataKetidakhadiran.fk_tidak_hadir;
+
+        print('fk_tidak_hadir get: ' + dataKetidakhadiran.fk_tidak_hadir);
+
+        for (DropdownIjin data in ijin) {
+          if (data.ijinNama ==
+              dataKetidakhadiran.fk_tidak_hadir.toUpperCase()) {
+            print("id sama terpilih: " + data.toString());
+            _currentIjin = data;
+          }
+        }
+        // _currentIjin = dataKetidakhadiran.fk_tidak_hadir;
+
         namaPegawaiController = TextEditingController(
             text:
                 LoginPreferences.prefs.getString(LoginPreferences.PERSON_NAME));
@@ -177,9 +268,10 @@ class _EditKetidakhadiranState extends State<EditKetidakhadiran> {
   @override
   void initState() {
     _formKey = GlobalKey<FormState>();
-    _dropDownIjinItems = getDropDownMenuItems();
-    _currentIjin = _dropDownIjinItems[0].value;
-    _getDataKetidakhadiranPegawai();
+    _getDropdownIjin(context);
+    // _dropDownIjinItems = getDropDownMenuItems();
+    // _currentIjin = _dropDownIjinItems[0].value;
+    // _getDataKetidakhadiranPegawai();
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
     super.initState();

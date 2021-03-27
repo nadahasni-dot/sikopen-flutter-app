@@ -97,17 +97,6 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-              selected: _currentMenu == DrawerConfiguration.MENU_PEMGAJUAN_CUTI
-                  ? true
-                  : false,
-              enabled: _isDeviceActivated ? true : false,
-              title: Text(DrawerConfiguration.MENU_PEMGAJUAN_CUTI),
-              leading: Icon(Icons.assignment_ind),
-              onTap: () {
-                _updateMenuState(DrawerConfiguration.MENU_PEMGAJUAN_CUTI);
-              },
-            ),
-            ListTile(
               selected: _currentMenu == DrawerConfiguration.MENU_LAPORAN_ABSENSI
                   ? true
                   : false,
@@ -192,24 +181,16 @@ class _MainScreenState extends State<MainScreen> {
       onPressed: () async {
         // ? clear login session
         LoginPreferences.prefs.setBool(LoginPreferences.LOGGED_IN, false);
-        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_ID,
-            null);
-        LoginPreferences.prefs.setInt(
-            LoginPreferences.USER_ID, null);
-        LoginPreferences.prefs.setString(LoginPreferences.USER_NAME,
-            null);
-        LoginPreferences.prefs.setBool(LoginPreferences.USER_STATUS,
-            null);
-        LoginPreferences.prefs.setString(LoginPreferences.PERSON_NAME,
-            null);
-        LoginPreferences.prefs.setInt(
-            LoginPreferences.PAR_ID, null);
-        LoginPreferences.prefs.setString(LoginPreferences.USER_SALT_ENCRYPT,
-            null);        
-        LoginPreferences.prefs.setString(LoginPreferences.EMPLOYEE_NIP,
-            null);
-        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_GROUP_ID,
-            null);
+        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_ID, null);
+        LoginPreferences.prefs.setInt(LoginPreferences.USER_ID, null);
+        LoginPreferences.prefs.setString(LoginPreferences.USER_NAME, null);
+        LoginPreferences.prefs.setBool(LoginPreferences.USER_STATUS, null);
+        LoginPreferences.prefs.setString(LoginPreferences.PERSON_NAME, null);
+        LoginPreferences.prefs.setInt(LoginPreferences.PAR_ID, null);
+        LoginPreferences.prefs
+            .setString(LoginPreferences.USER_SALT_ENCRYPT, null);
+        LoginPreferences.prefs.setString(LoginPreferences.EMPLOYEE_NIP, null);
+        LoginPreferences.prefs.setInt(LoginPreferences.EMPLOYEE_GROUP_ID, null);
 
         // ? generate new uid
         // DeviceRegPreferences.prefs.setString(DeviceRegPreferences.UID, null);
@@ -360,9 +341,6 @@ class _MainScreenState extends State<MainScreen> {
         break;
       case DrawerConfiguration.MENU_PEMGAJUAN_IJIN:
         selectedScreen = PengajuanIjinScreen();
-        break;
-      case DrawerConfiguration.MENU_PEMGAJUAN_CUTI:
-        selectedScreen = PengajuanCutiScreen();
         break;
       case DrawerConfiguration.MENU_REGISTRASI_DEVICE:
         selectedScreen = RegistrasiDeviceScreen();
